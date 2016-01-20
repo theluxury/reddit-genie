@@ -1,0 +1,11 @@
+# CONFIG FILES # 
+################
+
+*.yaml
+*.yaml~
+
+# EMACS STUFF #
+###############
+
+*.gitignore~
+*.py

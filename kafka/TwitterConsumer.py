@@ -7,6 +7,11 @@ auth.set_access_token(config['ACCESS_TOKEN'], config['ACCESS_SECRET'])
 
 api = tweepy.API(auth)
 
-public_tweets = api.home_timeline()
-for tweet in public_tweets:
-    print tweet.text
+class MyStreamListener(tweepy.StreamListener):
+
+    def on_status(self, status):
+        print(status.text)
+
+myStreamListener = MyStreamListener()
+myStream = tweepy.Stream(auth = api.auth, listener=myStreamListener)
+myStream.filter(languages=['en'], track=['a', 'the'])

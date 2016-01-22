@@ -25,7 +25,7 @@ for filename in glob.glob(path):
         print "uploaded json file number " + str(i)
         try:
             es.bulk(body=file.read())
-            os.rm(filename) # rm if finished uploading
+            os.remove(filename) # rm if finished uploading
         except Exception as e:
 #            shutil.move(filename, 'logs/' + os.path.basename(filename)) #if error, want to store log somewhere to see source of error. 
             logging.error("could not write file: " + filename + " with error: " + str(e))

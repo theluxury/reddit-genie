@@ -10,3 +10,9 @@
 *.gitignore~
 *.py~
 *.pyc
+*.sh~
+
+# TMP #
+#############
+
+tmp/

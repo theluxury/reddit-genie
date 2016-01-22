@@ -1,5 +1,5 @@
 #!/bin/bash
-# aws s3 --region us-west-2 cp s3://mark-wang-test/raw_logs/secor_backup/my-topic/offset=0/1_0_00000000000000000000 raw-data-download/
+# aws s3 --region us-west-2 cp s3://mark-wang-test/raw_logs/secor_backup/my-topic/offset=0/1_0_00000000000000000000 raw-data-download/ 
 # delete and remake the folders if they exist, since if you don't, could lead to repeated data if script fails later.
 if [ -d tmp/raw-data-download ]; then
     rm -rf tmp/raw-data-download

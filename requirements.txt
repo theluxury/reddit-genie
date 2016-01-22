@@ -2,3 +2,4 @@ tweepy
 kafka-python
 pyyaml
 elasticsearch
+awscli

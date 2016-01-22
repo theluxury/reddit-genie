@@ -9,14 +9,14 @@ fi
 mkdir -p tmp/decoded-tweets # since forqlift doesn't make new directories
 mkdir tmp/es-json
 
-aws s3 --recursive --region us-west-2 cp s3://mark-wang-test/dummy/ tmp/raw-data-download/ #download data
+aws s3 --recursive --region us-west-2 cp s3://mark-wang-test/namenode/ tmp/raw-data-download/ #download data
 if [ -d tmp/raw-data-download ]; then # if you got a file
     for filename in tmp/raw-data-download/*; do 
 	forqlift-0.9.0/bin/forqlift extract --file="$filename" --dir=tmp/decoded-tweets/ #decode data
 	python elastic-search/json-aggregator.py "tmp/decoded-tweets/*" "tmp/es-json/" # aggregate data
 	python elastic-search/elasticsearch-bulk.py "http://ec2-52-89-166-197.us-west-2.compute.amazonaws.com:9200" "tmp/es-json/*" #puts into ES
 
-	aws s3 --region us-west-2 mv s3://mark-wang-test/dummy/$(basename $filename) s3://mark-wang-test/destination/$(basename $filename) 
+	aws s3 --region us-west-2 mv s3://mark-wang-test/namenode/$(basename $filename) s3://mark-wang-test/destination/$(basename $filename) 
 
 	rm "$filename" # delete raw file
 	mkdir empty_dir # hack to delete everything in tmp/decoded-tweets

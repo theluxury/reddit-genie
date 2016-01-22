@@ -1,6 +1,7 @@
 import tweepy 
 import yaml
 import kafka
+import json
 import Constants
 
 config = yaml.safe_load(open("tweepy.yaml"))
@@ -19,6 +20,11 @@ class KafkaListener(tweepy.StreamListener):
         self.producer = kafka.SimpleProducer(client, async=True, batch_send_every_n=BATCH_SEND_EVERY_N, batch_send_every_t=BATCH_SEND_EVERY_T)
      
     def on_data(self, data):
+        tweetJsonString = data.encode('utf-8')
+        tweetJson = json.loads(tweetJsonString)
+        #occasionally there are timestamp tweets that are irrelavant. This parses them.
+        if 'id' not in tweetJson: 
+            return
         self.producer.send_messages(self.topic, data.encode('utf-8'))
 
     def on_error(self, error):

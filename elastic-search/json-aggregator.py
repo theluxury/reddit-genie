@@ -3,6 +3,7 @@ import sys
 import glob
 import json
 import logging
+import shutil
 
 path=sys.argv[1]
 logging.basicConfig(filename='logs/json-errors.log',level=logging.ERROR)
@@ -23,6 +24,7 @@ for filename in glob.glob(path):
                         i += 1
                         outputFileName = sys.argv[2] + str(i)
             except Exception as e:
-               logging.error("could not write file: " + filename + " with error: " + e
+                shutil.move(filename, "logs/" + filename)
+                logging.error("could not write file: " + filename + " with error: " + e
 
 

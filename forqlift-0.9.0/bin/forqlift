@@ -1,0 +1,183 @@
+#! /usr/bin/env bash
+
+## - - - - - - - - - - - - - - - - - - - -
+##
+## Copyright 2010-2012 Ethan McCallum, ExMachinaTech.net.
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##      http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+## - - - - - - - - - - - - - - - - - - - -
+
+
+## This script lifts a lot of material from the Maven ("mvn") launch script.
+## Thank you, Maven team!
+
+
+# ----------------------------------------------------------------------------
+# forqlift Start Up Batch script
+#
+# Required ENV vars:
+# ------------------
+#   JAVA_HOME - location of a JDK home dir
+#
+# Optional ENV vars
+# -----------------
+#   FORQLIFT_HOME - location of forqlift's installed home dir
+#   FORQLIFT_OPTS - parameters passed to the Java VM when running forqlift
+#     e.g. to debug forqlift itself, use
+#       set FORQLIFT_OPTS=-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
+# ----------------------------------------------------------------------------
+
+# OS specific support.  $var _must_ be set to either true or false.
+cygwin=false;
+darwin=false;
+mingw=false;
+linux=false;
+case "`uname`" in
+  CYGWIN*) cygwin=true ;;
+  MINGW*) mingw=true;;
+  Darwin*) darwin=true 
+           if [ -z "$JAVA_VERSION" ] ; then
+             JAVA_VERSION="CurrentJDK"
+           else
+             echo "Using Java version: $JAVA_VERSION"
+           fi
+           if [ -z "$JAVA_HOME" ] ; then
+             JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/${JAVA_VERSION}/Home
+           fi
+           ;;
+  Linux*) linux=true
+			LINUX_OS_ARCH=$( uname -i )
+			;;
+esac
+
+if [ -z "$JAVA_HOME" ] ; then
+  if [ -r /etc/gentoo-release ] ; then
+    JAVA_HOME=`java-config --jre-home`
+  fi
+fi
+
+if [ -z "$FORQLIFT_HOME" ] ; then
+  ## resolve links - $0 may be a link to forqlift's home
+  PRG="$0"
+
+  # need this for relative symlinks
+  while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+      PRG="$link"
+    else
+      PRG="`dirname "$PRG"`/$link"
+    fi
+  done
+
+  saveddir=`pwd`
+
+  FORQLIFT_HOME=`dirname "$PRG"`/..
+
+  # make it fully qualified
+  FORQLIFT_HOME=`cd "$FORQLIFT_HOME" && pwd`
+
+  cd "$saveddir"
+fi
+
+
+# build up the classpath based on existing JARs
+CLASSPATH="${FORQLIFT_HOME}/conf"
+
+for JAR in ${FORQLIFT_HOME}/lib.base/*.jar; do
+	CLASSPATH=${CLASSPATH}:${JAR};
+done
+
+for JAR in ${FORQLIFT_HOME}/lib.ext/*.jar; do
+	if [[ -a ${JAR} ]] ; then
+		CLASSPATH=${CLASSPATH}:${JAR};
+	fi
+done
+
+
+
+# For Cygwin, ensure paths are in UNIX format before anything is touched
+if $cygwin ; then
+  [ -n "$FORQLIFT_HOME" ] &&
+    FORQLIFT_HOME=`cygpath --unix "$FORQLIFT_HOME"`
+  [ -n "$JAVA_HOME" ] &&
+    JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
+  [ -n "$CLASSPATH" ] &&
+    CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
+fi
+
+# For Migwn, ensure paths are in UNIX format before anything is touched
+if $mingw ; then
+  [ -n "$FORQLIFT_HOME" ] &&
+    FORQLIFT_HOME="`(cd "$FORQLIFT_HOME"; pwd)`"
+  [ -n "$JAVA_HOME" ] &&
+    JAVA_HOME="`(cd "$JAVA_HOME"; pwd)`"
+  # TODO classpath?
+fi
+
+if [ -z "$JAVACMD" ] ; then
+  if [ -n "$JAVA_HOME"  ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+      # IBM's JDK on AIX uses strange locations for the executables
+      JAVACMD="$JAVA_HOME/jre/sh/java"
+    else
+      JAVACMD="$JAVA_HOME/bin/java"
+    fi
+  else
+    JAVACMD="`which java`"
+  fi
+fi
+
+if [ ! -x "$JAVACMD" ] ; then
+  echo "Error: JAVA_HOME is not defined correctly."
+  echo "  We cannot execute $JAVACMD"
+  exit 1
+fi
+
+if [ -z "$JAVA_HOME" ] ; then
+  echo "Warning: JAVA_HOME environment variable is not set."
+fi
+
+# For Cygwin, switch paths to Windows format before running java
+if $cygwin; then
+  [ -n "$FORQLIFT_HOME" ] &&
+    FORQLIFT_HOME=`cygpath --path --windows "$FORQLIFT_HOME"`
+  [ -n "$JAVA_HOME" ] &&
+    JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
+  [ -n "$HOME" ] &&
+    HOME=`cygpath --path --windows "$HOME"`
+fi
+
+# Thus far, Hadoop's native libraries (required for some compression)
+# are supported only under Linux
+FORQLIFT_JAVA_LIB_PATH=""
+if $linux; then
+	case "${LINUX_OS_ARCH}" in
+		*86*)
+			FORQLIFT_JAVA_LIB_PATH="-Djava.library.path=${FORQLIFT_HOME}/lib.native/Linux-i386-32" ;;
+		*64*)
+			FORQLIFT_JAVA_LIB_PATH="-Djava.library.path=${FORQLIFT_HOME}/lib.native/Linux-amd64-64" ;;
+	esac
+fi
+
+export CLASSPATH
+
+exec "$JAVACMD" \
+  $FORQLIFT_OPTS \
+  -Dforqlift.home="${FORQLIFT_HOME}" \
+  ${FORQLIFT_JAVA_LIB_PATH} \
+  forqlift.ui.Driver \
+  "$@"
+

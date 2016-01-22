@@ -1,0 +1,114 @@
+FORQLIFT FAQ
+
+## - - - - - - - - - - - - - - - - - - - -
+WHAT IS FORQLIFT?
+
+forqlift is a tool for managing SequenceFiles.
+
+If you work with Hadoop (or products built on Hadoop, such as
+Mahout), there’s a chance you work with SequenceFiles.
+
+In turn, if you work with SequenceFiles a lot and want an
+interface similar to the familiar tar or zip commands, forqlift
+is for you.
+
+## - - - - - - - - - - - - - - - - - - - -
+WHAT’S A SEQUENCEFILE, AND WHY WOULD I USE ONE?
+
+A SequenceFile is a Hadoop-specific archive format, similar to
+tar or zip.
+
+Hadoop typically works on text data, treating each line as a
+record (a key/value pair). If you’re processing text
+line-by-line, this is pretty natural: split the line on some
+delimiter (say, a tab or a comma) to define “key” and “value” and
+you Hadoop away.
+
+What if you want to use Hadoop’s parallel-processing muscle on
+binary data (images, videos, sound files, or anything else you
+can see as a series of bytes)? or what if you need to treat an
+entire text file (such as an XML document) as a single record?
+
+That’s when you’d use a SequenceFile. Hadoop treats the contents
+of a SequenceFile as records of key/value pairs. (For example: if
+you’re feeding Hadoop a series of images, the “key” could be the
+filename and the “value” could be the image’s raw bytes.)
+
+As an additional benefit, SequenceFiles are very efficient for
+Hadoop because you can ship lots of small files to and from the
+cluster as a single package.
+
+## - - - - - - - - - - - - - - - - - - - -
+WHERE DO I GET FORQLIFT?
+
+forqlift’s homepage at http://www.exmachinatech.net/go/forqlift
+has links for downloading.
+
+## - - - - - - - - - - - - - - - - - - - - WHAT DO I NEED TO RUN
+FORQLIFT?
+
+forqlift requires Java runtime (JRE) 1.6.
+
+If you’re running under Windows, forqlift also requires a cygwin
+install that includes the chmod command. (This is a requirement
+of the underlying Hadoop code, not of forqlift itself.)
+
+Please note that forqlift does not require a Hadoop install, nor
+a Hadoop cluster! forqlift uses the Hadoop libraries on the
+backend, but those are included in the product.
+
+## - - - - - - - - - - - - - - - - - - - -
+WHAT IS FORQLIFT’S LICENSE?
+
+forqlift is released under the popular Apache License, Version
+2.0.
+
+You can see the text of this license in the LICENSE.txt file
+included in the distribution, or online at one of the Apache
+Foundation or the Open Source Initiative.
+
+## - - - - - - - - - - - - - - - - - - - -
+WHY DID YOU WRITE FORQLIFT?
+
+In a nutshell: it all started when I was churning XML data
+through Mahout (Apache’s library of machine-learning algorithms).
+Mahout uses Hadoop on the backend, and therefore it likes to read
+data from SequenceFiles. Mahout’s basic tools for loading data
+into SequenceFiles were fine, but I wanted something with a bit
+more heft. So I wrote forqlift.
+
+## - - - - - - - - - - - - - - - - - - - -
+WHAT’S WITH THE NAME, "FORQLIFT?"
+
+It’s a play on the term “forklift.” Forklifts, like
+SequenceFiles, can be used to move things in bulk.
+
+I tossed in the “q” because that letter appears in the term
+“SequenceFile.”
+
+## - - - - - - - - - - - - - - - - - - - -
+DO YOU HAVE SOME EXAMPLES ON HOW TO USE FORQLIFT?
+
+You bet I do! Check out the examples page on the website, or the
+EXAMPLES.txt file in the distribution.
+
+## - - - - - - - - - - - - - - - - - - - -
+CAN I SUGGEST A FEATURE FOR FORQLIFT?
+
+Please do! forqlift is still in its early stages. (I plan to
+tackle some cleanup before I add new features, but feel free to
+share your thoughts and use cases. That will help set future
+direction.)
+
+Just shoot a message to:
+forqlift-questions
+at
+exmachinatech.net
+
+## - - - - - - - - - - - - - - - - - - - -
+CAN I ASK YOU A QUESTION ABOUT FORQLIFT?
+
+Go right ahead:
+forqlift-questions
+at
+exmachinatech.net

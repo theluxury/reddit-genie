@@ -14,7 +14,7 @@ if [ -d tmp/raw-data-download ]; then # if you got a file
     for filename in tmp/raw-data-download/*; do 
 	forqlift-0.9.0/bin/forqlift extract --file="$filename" --dir=tmp/decoded-tweets/ #decode data
 	python elastic-search/json-aggregator.py "tmp/decoded-tweets/*" "tmp/es-json/" # aggregate data
-	python elastic-search/elaticsearch-bulk.py "http://ec2-52-89-166-197.us-west-2.compute.amazonaws.com:9200" "tmp/es-json/*" #puts into ES
+	python elastic-search/elasticsearch-bulk.py "http://ec2-52-89-166-197.us-west-2.compute.amazonaws.com:9200" "tmp/es-json/*" #puts into ES
 
 	aws s3 --region us-west-2 mv s3://mark-wang-test/dummy/$(basename $filename) s3://mark-wang-test/destination/$(basename $filename) 
 

@@ -1,12 +1,13 @@
+import os
 import tweepy 
-import yaml
 import kafka
 import json
+from datetime import datetime
 import Constants
 
-config = yaml.safe_load(open("tweepy.yaml"))
-auth = tweepy.OAuthHandler(config['CONSUMER_KEY'], config['CONSUMER_SECRET'])
-auth.set_access_token(config['ACCESS_TOKEN'], config['ACCESS_SECRET'])
+
+auth = tweepy.OAuthHandler(Constants.CONSUMER_KEY, Constants.CONSUMER_SECRET)
+auth.set_access_token(Constants.ACCESS_TOKEN, Constants.ACCESS_SECRET)
 api = tweepy.API(auth)
 ONE_HUNDRED_MOST_COMMON_WORDS = Constants.ONE_HUNDRED_MOST_COMMON_WORDS
 BATCH_SEND_EVERY_N = Constants.BATCH_SEND_EVERY_N
@@ -28,13 +29,13 @@ class KafkaListener(tweepy.StreamListener):
         self.producer.send_messages(self.topic, data.encode('utf-8'))
 
     def on_error(self, error):
-        print "ERROR: " + error
+        print "ERROR: " + str(error)
         if not os.path.isfile(ERROR_LOG_FILENAME):
             f = file(ERROR_LOG_FILENAME, 'w')
             f.close()
-        with open(logfilename, 'ab') as f:
-            f.write(datetime.now())
-            f.write(error)
+        with open(ERROR_LOG_FILENAME, 'ab') as f:
+            f.write(datetime.now().strftime("%Y-%m-%d %H:%M")) + '     '
+            f.write(str(error)) + '\n'
 
 myStreamListener = KafkaListener("my-topic")
 myStream = tweepy.Stream(auth = api.auth, listener=myStreamListener)

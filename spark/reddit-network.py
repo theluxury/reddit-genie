@@ -3,6 +3,10 @@ import sys
 import ast
 from cassandra.cluster import Cluster
 
+if sys.argv[1] == 'subreddits_graph':
+    
+
+
 def add_up_unique(dict1, dict2):
     for key, value in dict1.iteritems():
         if not key in dict2:

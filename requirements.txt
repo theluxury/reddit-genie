@@ -3,5 +3,6 @@ kafka-python
 pyyaml
 elasticsearch
 awscli
+pyspark
 cassandra-driver
 cqlengine

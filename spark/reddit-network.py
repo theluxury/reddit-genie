@@ -17,7 +17,7 @@ def add_up_unique(dict1, dict2):
 
 def insert_into_cassandra(partition):         
    if partition:
-       cluster = Cluster(['52.89.166.197', '52.89.166.250', '52.89.167.189', '52.89.167.219'])
+       cluster = Cluster(['52.88.244.205', '52.35.233.194', '52.34.55.16', '52.89.167.189', '52.88.247.22', '52.89.166.197'])
        session = cluster.connect('reddit')
        for item in partition:
            preparedStmt = session.prepare("INSERT INTO users_graph (username, subreddit) VALUES (?, ?)")

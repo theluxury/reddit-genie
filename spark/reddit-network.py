@@ -2,7 +2,8 @@ from pyspark import SparkContext, SQLContext
 import sys
 import ast
 from cassandra.cluster import Cluster
-
+from boto.s3.connection import S3Connection
+from os import environ
 
 GRAPH_NAME = sys.argv[1]
 if GRAPH_NAME == 'subreddits_graph':
@@ -34,17 +35,27 @@ def insert_into_cassandra(partition):
        session.shutdown()
        cluster.shutdown()
     
-mainRedditPageId = 't5_6' # going to filter this since we're doing subreddit graphs. 
-logFile = 's3n://reddit-comments/2007/RC_2007-11'
-year = logFile.split('-')[1][-4:] 
-month = logFile.split('-')[2]
-outputDirectory = 's3n://mark-wang-test/reddit-graph/results'
 sc = SparkContext('spark://ip-172-31-2-10:7077', "Reddit Subreddits Graph App")
 sqlContext = SQLContext(sc)
-df = sqlContext.read.json(logFile)
-subRedditRDD = df.filter(df['subreddit_id'] != mainRedditPageId)
-follows = subRedditRDD.map(lambda json: (json.subreddit, ('{0}_{1}'.format(year, month), {json.author: 1})))
-followsList = follows.reduceByKey(lambda a,b: (a[0], add_up_unique(a[1], b[1]))) 
-followsList.foreachPartition(insert_into_cassandra)
+mainRedditPageId = 't5_6' # going to filter this since we're doing subreddit graphs. 
+
+conn = S3Connection(environ['AWS_ACCESS_KEY_ID'], environ['AWS_SECRET_ACCESS_KEY'])
+bucket = conn.get_bucket('reddit-comments')
+for key in bucket.list():
+    if '-' not in key.name.encode('utf-8'):
+        continue
+    print key.name.encode('utf-8')
+    logFile = 's3n://reddit-comments/' + key.name.encode('utf-8')
+    year = logFile.split('-')[1][-4:] 
+    if int(year) < 2012:
+        continue
+    month = logFile.split('-')[2]
+    df = sqlContext.read.json(logFile)
+    subRedditRDD = df.filter(df['subreddit_id'] != mainRedditPageId)
+    follows = subRedditRDD.map(lambda json: (json.subreddit, ('{0}_{1}'.format(year, month), {json.author: 1})))
+    followsList = follows.reduceByKey(lambda a,b: (a[0], add_up_unique(a[1], b[1]))) 
+    followsList.foreachPartition(insert_into_cassandra)
 
 sc.stop()
+
+

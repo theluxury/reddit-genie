@@ -11,7 +11,7 @@ path=sys.argv[2]
 logsFilePath = os.path.dirname(os.path.abspath(__file__)) + '/logs/'
 if not os.path.exists(logsFilePath):
     os.makedirs(logsFilePath)
-logging.basicConfig(filename=logsFilePath + 'reddit-elasticsearch-bulk-errors.log',level=logging.ERROR)
+logging.basicConfig(filename=logsFilePath + 'reddit-elasticsearch-bulk.log',level=logging.DEBUG)
 es = Elasticsearch(
     [host],
     sniff_on_start=True,    # sniff before doing anything
@@ -20,12 +20,13 @@ es = Elasticsearch(
     timeout=30
 )
 i = 0
-for filename in glob.glob(path+'*'):
+for filename in glob.glob(path):
     with open(filename) as file:
         i += 1
         print "uploaded json file number " + str(i)
         try:
             es.bulk(body=file.read())
+            logging.debug("Sucessfully finished writing {0}".format(filename);
        #     os.remove(filename) # rm if finished uploading
         except Exception as e:
             print 'meh'

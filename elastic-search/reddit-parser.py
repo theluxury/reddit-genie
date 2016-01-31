@@ -32,9 +32,6 @@ with open(file_name) as file:
             # out anyways. This winds up sparing a lot of space. Full comments are stored in cassandra. 
             es_comment_json = {}
             es_comment_json['author'] = comment_json['author']
-            year_month = file_name.split('_')[-1]
-            # save filename intelligently
-            es_comment_json['year_month'] = '{0}_{1}'.format(year_month.split('-')[0], year_month.split('-')[1]) 
             es_comment_json['subreddit'] = comment_json['subreddit']
             es_comment_json['score'] = comment_json['score']
             es_comment_json['created_utc'] = long(comment_json['created_utc'])

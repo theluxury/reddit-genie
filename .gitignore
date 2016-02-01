@@ -13,13 +13,9 @@
 *.sh~
 *.py#
 
-# TMP #
-#############
-
-tmp/
-
-
 # OTHER #
 #########
+tmp/
 logs/
 *.out
+.DS_Store

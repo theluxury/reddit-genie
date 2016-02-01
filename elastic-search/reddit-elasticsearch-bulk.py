@@ -30,6 +30,6 @@ for filename in glob.glob(path):
             print "uploaded json file number " + str(i)
             os.remove(filename) # rm if finished uploading
         except Exception as e:
-            print 'meh'
+            print "could not write file: {0} with error: {1}".format(filename, str(e))
 # shutil.move(filename, 'logs/' + os.path.basename(filename)) #if error, want to store log somewhere to see source of error.
-            logging.error("could not write file: " + filename + " with error: " + str(e))
+            logging.error("could not write file: {0} with error: {1}".format(filename, str(e)))

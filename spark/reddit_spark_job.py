@@ -48,7 +48,8 @@ for key in reddit_bucket.list():
     if int(year) == 2007: # already did first year
         continue
     df = sqlContext.read.json(logFile)
-    final_string = df.map(lambda line: elastic_search_mapper(line))
+    filtered_df = df.filter(df.author != '[deleted]')
+    final_string = filtered_df.map(lambda line: elastic_search_mapper(line))
     outputDirectory = 's3n://mark-wang-test/reddit-es-comments-json/{0}/'.format(year_month)
     # delete files if it already exists.
     for my_key in my_bucket.list(prefix='reddit-es-comments-json/{0}'.format(year_month)):

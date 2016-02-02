@@ -56,6 +56,7 @@ def get_filtered_string(original_string):
     return ' '.join(filtered_tokenized_list)
     
 sc = SparkContext(SPARK_ADDRESS, "Reddit JSON Parser App")
+# sc.defaultMinPartitions = 600
 sql_context = SQLContext(sc)
 
 conn = S3Connection(environ['AWS_ACCESS_KEY_ID'], environ['AWS_SECRET_ACCESS_KEY'])
@@ -67,10 +68,12 @@ for key in reddit_bucket.list():
     logFile = 's3n://reddit-comments/' + key.name.encode('utf-8')
     year = logFile.split('-')[1][-4:]
     month = logFile.split('-')[2]
+    if int(year) > 2012 or int(year) < 2011 or (int(year) == 2011 and int(month) < 6):
+        continue
     year_month = '{0}_{1}'.format(year, month)
     df = sql_context.read.json(logFile)
     filtered_df = df.filter(df.author != '[deleted]')
-    final_rdd = filtered_df.map(lambda line: elastic_search_mapper(line, year_month))
+    final_rdd = filtered_df.map(lambda line: elastic_search_mapper(line, year_month)).repartition(600)
     final_rdd.foreachPartition(put_to_elasticsearch)
 
 sc.stop()

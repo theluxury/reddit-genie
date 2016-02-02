@@ -29,32 +29,25 @@ def put_to_elasticsearch(partition):
         sniffer_timeout=60, # and also every 60 seconds
         timeout=30
     )
-    i = 0
     if partition:
         json_string = ''
         for item in partition:
-            json_string += item
-            json_string += '\n'
-#           preparedStmt = session.prepare("INSERT INTO {0} ({1}, {2}, {3}) VALUES (?, ?, ?)".format(GRAPH_NAME, PRIMARY_KEY, PARTITION_KEY, DICTIONARY))
- #          boundStmt = preparedStmt.bind([item[0], item[1][0], item[1][1]]) #username then subreddit
-  #         session.execute(boundStmt)
-#        print json_string
+            if not json_string:
+                json_string = item
+            else:
+                json_string = '\n'.join([json_string, item])
+        json_string = '\n'.join([json_string, ''])  #need last empty line. 
         es.bulk(body=json_string)
-    #except Exception as e:
-     #   logging.error("could not write to elasticsearch with error: {0}".format(str(e)))
     
-def elastic_search_mapper(df):
-    final_string = ""
-    action_json = {'index': {'_index': 'reddit_filtered', '_type': 'comment', '_id': df.id}}  
-    final_string += json.dumps(action_json)
-    final_string +='\n'
+def elastic_search_mapper(df, year_month):
+    action_json = {'index': {'_index': 'reddit_filtered_{0}'.format(year_month), '_type': 'comment', '_id': df.id}}  
     es_comment_json = {}
     es_comment_json['author'] = df.author
     es_comment_json['subreddit'] = df.subreddit
     es_comment_json['score'] = df.score
     es_comment_json['created_utc'] = long(df.created_utc)
     es_comment_json['filtered_body'] = get_filtered_string(df.body)
-    final_string += json.dumps(es_comment_json)
+    final_string = '\n'.join([json.dumps(action_json), json.dumps(es_comment_json)])
     return final_string
 
 def get_filtered_string(original_string):
@@ -73,19 +66,11 @@ for key in reddit_bucket.list():
         continue
     logFile = 's3n://reddit-comments/' + key.name.encode('utf-8')
     year = logFile.split('-')[1][-4:]
-    if year != '2007':
-        continue
     month = logFile.split('-')[2]
     year_month = '{0}_{1}'.format(year, month)
     df = sql_context.read.json(logFile)
     filtered_df = df.filter(df.author != '[deleted]')
-    final_rdd = filtered_df.map(lambda line: elastic_search_mapper(line))
+    final_rdd = filtered_df.map(lambda line: elastic_search_mapper(line, year_month))
     final_rdd.foreachPartition(put_to_elasticsearch)
-
-#    outputDirectory = 's3n://mark-wang-test/reddit-es-comments-json/{0}/'.format(year_month)
-    # delete files if it already exists.
- #   for my_key in my_bucket.list(prefix='reddit-es-comments-json/{0}'.format(year_month)):
- #       my_key.delete()
-#    final_string.saveAsTextFile(outputDirectory)
 
 sc.stop()

@@ -5,3 +5,4 @@ elasticsearch
 awscli
 cassandra-driver
 cqlengine
+nltk

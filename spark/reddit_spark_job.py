@@ -16,7 +16,7 @@ SPARK_ADDRESS = sys.argv[1]
 APP_NAME = "Reddit JSON Parser App"
 
 def put_to_elasticsearch(partition):
-    hosts=["ec2-52-35-132-98.us-west-2.compute.amazonaws.com", "ec2-52-34-176-185.us-west-2.compute.amazonaws.com", "ec2-52-89-115-101.us-west-2.compute.amazonaws.com", "ec2-52-88-254-51.us-west-2.compute.amazonaws.com", "ec2-52-88-247-22.us-west-2.compute.amazonaws.com", "ec2-52-89-166-197.us-west-2.compute.amazonaws.com"]
+    hosts=["ec2-52-35-132-98.us-west-2.compute.amazonaws.com"]#, "ec2-52-34-176-185.us-west-2.compute.amazonaws.com", "ec2-52-89-115-101.us-west-2.compute.amazonaws.com", "ec2-52-88-254-51.us-west-2.compute.amazonaws.com", "ec2-52-88-247-22.us-west-2.compute.amazonaws.com", "ec2-52-89-166-197.us-west-2.compute.amazonaws.com"]
     logs_file_path = os.path.dirname(os.path.abspath(__file__)) + '/logs/'
     if not os.path.exists(logs_file_path):
         os.makedirs(logs_file_path)
@@ -65,15 +65,19 @@ my_bucket = conn.get_bucket('mark-wang-test')
 for key in reddit_bucket.list():
     if '-' not in key.name.encode('utf-8'):
         continue
-    logFile = 's3n://reddit-comments/' + key.name.encode('utf-8')
-    year = logFile.split('-')[1][-4:]
-    month = logFile.split('-')[2]
-    if int(year) > 2012 or int(year) < 2011 or (int(year) == 2011 and int(month) < 6):
+    log_file = 's3n://reddit-comments/' + key.name.encode('utf-8')
+    year = log_file.split('-')[1][-4:]
+    month = log_file.split('-')[2]
+    if int(year) < 2011 or (int(year) == 2011 and int(month) < 11):
         continue
     year_month = '{0}_{1}'.format(year, month)
-    df = sql_context.read.json(logFile)
+    df = sql_context.read.json(log_file)
     filtered_df = df.filter(df.author != '[deleted]')
-    final_rdd = filtered_df.map(lambda line: elastic_search_mapper(line, year_month)).repartition(600)
-    final_rdd.foreachPartition(put_to_elasticsearch)
+    final_rdd = filtered_df.map(lambda line: elastic_search_mapper(line, year_month))#.repartition(600)
+    output_directory = 's3n://mark-wang-test/reddit-es-comments-json/{0}/'.format(year_month)
+    for my_key in my_bucket.list(prefix='reddit-es-comments-json/{0}'.format(year_month)):
+        my_key.delete()
+    final_rdd.saveAsTextFile(output_directory)
+    # final_rdd.foreachPartition(put_to_elasticsearch)
 
 sc.stop()

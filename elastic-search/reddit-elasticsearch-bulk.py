@@ -14,13 +14,14 @@ if not os.path.exists(logsFilePath):
 logging.basicConfig(filename=logsFilePath + 'reddit-elasticsearch-bulk.log',level=logging.DEBUG)
 es = Elasticsearch(
     hosts,
-    port=9201,
+    port=9200,
     sniff_on_start=True,    # sniff before doing anything
     sniff_on_connection_fail=True,    # refresh nodes after a node fails to respond
     sniffer_timeout=60, # and also every 60 seconds
     timeout=30
 )
 i = 0
+print 'path is {0}'.format(path)
 for filename in glob.glob(path):
     with open(filename) as file:
         i += 1

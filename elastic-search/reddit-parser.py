@@ -36,7 +36,9 @@ with open(file_name) as file:
             es_comment_json['score'] = comment_json['score']
             es_comment_json['created_utc'] = long(comment_json['created_utc'])
             es_comment_json['filtered_body'] = get_filtered_string(comment_json['body'])
-            actionJson = {'index': {'_index': 'reddit_filtered', '_type': 'comment', '_id': comment_json['id']}}                   
+            year = logFile.split('-')[1][-4:]
+            month = logFile.split('-')[2]
+            actionJson = {'index': {'_index': 'reddit_filtered_{0}_{1}'.format(year, month), '_type': 'comment', '_id': comment_json['id']}}                   
             with open(output_file_name, 'a+') as elastic_search_action_file:
                 json.dump(actionJson, elastic_search_action_file)
                 elastic_search_action_file.write('\n')

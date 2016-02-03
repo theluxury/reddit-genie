@@ -21,4 +21,18 @@ session.execute("CREATE TABLE IF NOT EXISTS users_graph ( "
                 + " year_month text,"
                 + " subreddits map<text, int>," 
                 + " PRIMARY KEY (username, year_month));")
+
+session.execute("CREATE TABLE IF NOT EXISTS comments ( "
+                + "author text,"
+                + "year_month text,"
+                + "created_utc timestamp,"
+                + "subreddit text,"
+                + "id text,"
+                + "word_count map<text, int>,"
+                + "body text,"
+                + "score int,"
+                + "ups int,"
+                + "controversiality int,"
+                + "PRIMARY KEY ((author, year_month), created_utc, subreddit, post_id));")
+
 session.shutdown()

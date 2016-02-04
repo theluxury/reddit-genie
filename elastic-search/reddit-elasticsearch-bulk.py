@@ -13,7 +13,7 @@ def download_files():
     tmp_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/tmp/')
     conn = S3Connection(environ['AWS_ACCESS_KEY_ID'], environ['AWS_SECRET_ACCESS_KEY'])
     bucket = conn.get_bucket('mark-wang-test')
-    for key in bucket.list(prefix='namenode'):
+    for key in bucket.list(prefix=environ['S3_REDDIT_DIRECTORY_NAME']):
         if key.name.split('-')[0][-4:] == 'part': # filter folder and _SUCCESS files
             # make directory if it doesnt exist
             year_month = key.name.split('/')[-2]

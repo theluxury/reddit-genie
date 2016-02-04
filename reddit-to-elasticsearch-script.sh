@@ -9,10 +9,14 @@ set -e
 
 #aws s3 --recursive --region us-west-2 cp s3://mark-wang-test/namenode tmp/raw-data-download/ #download data
 if [ -d tmp/raw-data-download ]; then # if you got a file
-    for directory in tmp/raw-data-download/*; do
-	if [ -d "${directory}" ]; then
-	    python elastic-search/reddit-elasticsearch-bulk.py "tmp/raw-data-download/${directory##*/}/*" #puts into ES
-	fi
+    for directory in tmp/raw-data-download/*/*; do
+	echo "${directory}"
+#for file in ${directory}/*; do
+	#    echo "${file}"
+	#done
+#if [ -d "${directory}" ]; then
+	    #python elastic-search/reddit-elasticsearch-bulk.py "tmp/raw-data-download/${directory##*/}/*" #puts into ES
+	#fi
 
 
 

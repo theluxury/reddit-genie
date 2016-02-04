@@ -5,12 +5,25 @@ from elasticsearch import Elasticsearch
 import json
 from wordcloud import WordCloud
 import os
-from .forms import LoginForm
+from .forms import LoginForm, SearchForm
+from es_helper import ESHelper
 
 @app.route('/')
 @app.route('/bootstrap-index')
 def bootstrap():
     return render_template('bootstrap-index.html')
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    form = SearchForm()
+    if form.validate_on_submit():
+        flash('Search requested for subreddit: {0} and topic: {1} for year_month: {2}'.format(form.subreddit.data, form.topic.data, form.year_month.data))
+        es_helper = ESHelper()
+        print es_helper.search(form.subreddit.data, form.topic.data, form.year_month.data)
+    return render_template('search.html',
+                           title='Reddit Genie',
+                           form=form)
+        
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -18,7 +31,7 @@ def login():
     if form.validate_on_submit():
         flash('Login requested for OpenID="%s", remember_me=%s' %
               (form.openid.data, str(form.remember_me.data)))
-#xsxs        return redirect('/index')
+        
     return render_template('login.html', 
                            title='Sign In',
                            form=form)

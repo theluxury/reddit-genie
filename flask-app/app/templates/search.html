@@ -1,0 +1,31 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Query</h1>
+<form action="" method="post" name="login">
+  {{ form.hidden_tag() }}
+  <p>
+    Please enter your subreddit:<br>
+    {{ form.subreddit(size=80) }}<br>
+    {% for error in form.subreddit.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}<br>
+  </p>
+  <p>
+    Please enter your topic:<br>
+    {{ form.topic(size=80) }}<br>
+    {% for error in form.topic.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}<br>
+  </p>
+  <p>
+    Please enter your year_month:<br>
+    {{ form.year_month(size=80) }}<br>
+    {% for error in form.year_month.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}<br>
+  </p>
+  <p><input type="submit" value="Search"></p>
+</form>
+{% endblock %}

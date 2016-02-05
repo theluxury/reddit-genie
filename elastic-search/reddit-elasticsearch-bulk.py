@@ -14,7 +14,7 @@ def download_files():
     conn = S3Connection(environ['AWS_ACCESS_KEY_ID'], environ['AWS_SECRET_ACCESS_KEY'])
     bucket = conn.get_bucket('mark-wang-test')
     for key in bucket.list(prefix=environ['S3_REDDIT_DIRECTORY_NAME']):
-        if key.name.split('-')[0][-4:] == 'part': # filter folder and _SUCCESS files
+        if key.name.split('-')[-2][-4:] == 'part': # filter folder and _SUCCESS files
             # make directory if it doesnt exist
             year_month = key.name.split('/')[-2]
             file_name = key.name.split('/')[-1]
@@ -53,7 +53,8 @@ def main():
                     relative_path = '/'.join([filename.split('/')[-2], filename.split('/')[-1]])
                     print "uploaded json file {0}".format(relative_path)
                     # first move file in s3
-                    os.system('aws s3 --region us-west-2 mv s3://mark-wang-test/{0}/{1} s3://mark-wang-test/reddit-finished/{1}'.format(environ['S3_REDDIT_DIRECTORY_NAME'], relative_path))
+                    reddit_comments_parent_s3_folder = environ['S3_REDDIT_DIRECTORY_NAME'].split('/')[0]
+                    os.system('aws s3 --region us-west-2 mv s3://mark-wang-test/{0}/{1} s3://mark-wang-test/reddit-finished/{1}'.format(reddit_comments_parent_s3_folder, relative_path))
                     # then remove from local
                     os.remove(filename) 
                 except Exception as e:

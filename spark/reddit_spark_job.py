@@ -68,7 +68,7 @@ for key in reddit_bucket.list():
     log_file = 's3n://reddit-comments/' + key.name.encode('utf-8')
     year = log_file.split('-')[1][-4:]
     month = log_file.split('-')[2]
-    if int(year) < 2011 or (int(year) == 2011 and int(month) < 11):
+    if int(year) < 2014 or (int(year) == 2014 and int(month) < 12):
         continue
     year_month = '{0}_{1}'.format(year, month)
     df = sql_context.read.json(log_file)

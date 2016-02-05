@@ -13,7 +13,7 @@ class ESHelper():
             timeout=30
             )
 
-    def search(self, subreddit, topic, year_month):
+    def get_top_users(self, subreddit, year_month, num_users):
         response = self.es.search(index='reddit_filtered_{0}'.format(year_month), body={
                 "size": 0,
                 "query": {
@@ -25,19 +25,45 @@ class ESHelper():
                     "text": {
                         "terms": {
                             "field": "author",
-                            "size": 1000
+                            "size": num_users
                             }
                         }
                     }
                 })
         if response['timed_out'] == True:
-            # TODO: handle this
-            print 'ruhroh'
-        return response
+            return []
+        else:
+            names_list = []
+            for json_element in response['aggregations']['text']['buckets']:
+                names_list.append(json_element['key'])
+            return names_list
 
-#         return reponse          
-#     namesList = []
-#     for jsonElement in response['aggregations']['text']['buckets']:
-#         namesList.append(jsonElement['key'])
-# 
-
+    def get_top_words(self, topic, year_month, users, num_terms):
+        response = self.es.search(index='reddit_filtered_{0}'.format(year_month), body={
+                "size": 0,
+                "query": {
+                    "bool": {
+                        "filter": [
+                            { "match": {"filtered_body": topic}},
+                            { "terms" : { "author": users }}
+                            ]
+                    }
+                },
+                "aggregations": {
+                    "text": {
+                        "terms": {
+                            "field": "filtered_body",
+                            "size": num_terms
+                            }
+                        }
+                    }
+                })
+        if response['timed_out'] == True:
+            return []
+        else:
+            words_list = []
+            bad_words_set = {topic, 'm', 'people', 'think','going', 'something', 'guy', 'things'}
+            for json_element in response['aggregations']['text']['buckets']:
+                if json_element['key'] not in bad_words_set:
+                    words_list.append({'text': json_element['key'], 'size': json_element['doc_count']})
+            return words_list

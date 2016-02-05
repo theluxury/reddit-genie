@@ -7,6 +7,9 @@ from wordcloud import WordCloud
 import os
 from .forms import LoginForm, SearchForm
 from es_helper import ESHelper
+import json
+
+
 
 @app.route('/')
 @app.route('/bootstrap-index')
@@ -17,9 +20,17 @@ def bootstrap():
 def search():
     form = SearchForm()
     if form.validate_on_submit():
-        flash('Search requested for subreddit: {0} and topic: {1} for year_month: {2}'.format(form.subreddit.data, form.topic.data, form.year_month.data))
         es_helper = ESHelper()
-        print es_helper.search(form.subreddit.data, form.topic.data, form.year_month.data)
+        top_users = es_helper.get_top_users(form.subreddit.data, form.year_month.data, 1000)
+        top_words = es_helper.get_top_words(form.topic.data, form.year_month.data, top_users, 200)
+        if not top_words:
+            print "nope"
+            flash("Didn't get any results.:( Are you sure you put the right things in? Remember subreddit is case sensitive.")
+        else:
+            print top_words
+            return render_template('results.html', title="Reddit Genie", form=form, words=json.dumps(top_words))
+    else:
+        flash("You didn't fill the form right. :(")
     return render_template('search.html',
                            title='Reddit Genie',
                            form=form)

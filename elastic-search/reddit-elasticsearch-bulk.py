@@ -22,10 +22,10 @@ def download_files():
                 file_name = key.name.split('/')[-1]
                 if not os.path.exists("{0}/{1}".format(tmp_dir, year_month)):
                     os.system('mkdir -p {0}/{1}'.format(tmp_dir, year_month))
-                    full_file_path = '{0}/{1}/{2}'.format(tmp_dir, year_month, file_name)
-                    # should do check here to see if file exists or not yet
-                    if not os.path.exists(full_file_path):
-                        key.get_contents_to_filename(full_file_path)
+                # should do check here to see if file exists or not yet
+                print full_file_path
+                if not os.path.exists(full_file_path):
+                    key.get_contents_to_filename(full_file_path)
     return tmp_dir
 
 hosts=["ec2-52-35-132-98.us-west-2.compute.amazonaws.com", "ec2-52-34-176-185.us-west-2.compute.amazonaws.com", "ec2-52-89-115-101.us-west-2.compute.amazonaws.com", "ec2-52-88-254-51.us-west-2.compute.amazonaws.com", "ec2-52-88-247-22.us-west-2.compute.amazonaws.com", "ec2-52-89-166-197.us-west-2.compute.amazonaws.com"]
@@ -57,8 +57,10 @@ def main():
                     print "uploaded json file {0}".format(relative_path)
                     # first move file in s3
                     os.system('aws s3 --region us-west-2 mv s3://mark-wang-test/{0}/{1} s3://mark-wang-test/reddit-finished/{1}'.format(s3_reddit_prefix, relative_path))
+                    print "moved file"
                     # then remove from local
-                    os.remove(filename) 
+                    os.remove(filename)
+                    print "deleted from local"
                 except Exception as e:
                     print "could not write file: {0} with error: {1}".format(filename, str(e))
                     logging.error("could not write file: {0} with error: {1}".format(filename, str(e)))

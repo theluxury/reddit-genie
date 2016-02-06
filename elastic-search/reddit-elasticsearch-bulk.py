@@ -23,7 +23,7 @@ def download_files():
                 if not os.path.exists("{0}/{1}".format(tmp_dir, year_month)):
                     os.system('mkdir -p {0}/{1}'.format(tmp_dir, year_month))
                 # should do check here to see if file exists or not yet
-                print full_file_path
+                full_file_path = '{0}/{1}/{2}'.format(tmp_dir, year_month, file_name)
                 if not os.path.exists(full_file_path):
                     key.get_contents_to_filename(full_file_path)
     return tmp_dir

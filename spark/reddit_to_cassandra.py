@@ -65,9 +65,9 @@ for key in bucket.list():
     print key.name.encode('utf-8')
     logFile = 's3n://reddit-comments/' + key.name.encode('utf-8')
     year = logFile.split('-')[1][-4:] 
-#    if int(year) > 2008:
-#        continue
     month = logFile.split('-')[2]
+    if int(year) < 2013 or (int(year) == 2013 and int(month) <6):
+        continue
     df = sqlContext.read.json(logFile)
     users_rdd = df.filter(df['author'] != '[deleted]') #df['subreddit_id'] != mainRedditPageId and df['author'] != '[deleted]')
     users_row = users_rdd.map(lambda json: (json.author, '{0}_{1}'.format(year, month), json.created_utc, json.subreddit, json.id, word_frequency(json.body), json.body, json.score, json.ups, json.controversiality))

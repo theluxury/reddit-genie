@@ -5,11 +5,11 @@ from cassandra.cluster import Cluster
 from boto.s3.connection import S3Connection
 from os import environ
 
-GRAPH_NAME = sys.argv[1]
-if GRAPH_NAME == 'subreddits_graph':
-    PRIMARY_KEY = 'subreddit'
-    PARTITION_KEY = 'year_month'
-    DICTIONARY = 'users'
+# GRAPH_NAME = sys.argv[1]
+GRAPH_NAME = 'subreddits_graph'
+PRIMARY_KEY = 'subreddit'
+PARTITION_KEY = 'year_month'
+DICTIONARY = 'users'
 #elif GRAPH_NAME == 'users_graph':
  #   PRIMARY_KEY = 'user'
   #  PARTITION_KEY = 'year_month'
@@ -35,7 +35,7 @@ def insert_into_cassandra(partition):
        session.shutdown()
        cluster.shutdown()
     
-sc = SparkContext('spark://ip-172-31-2-10:7077', "Reddit Subreddits Graph App")
+sc = SparkContext('spark://ip-172-31-2-10:7077', "Reddit Subreddits Graph App {0} {1}".format(sys.argv[1], sys.argv[2]))
 sqlContext = SQLContext(sc)
 mainRedditPageId = 't5_6' # going to filter this since we're doing subreddit graphs. 
 
@@ -44,16 +44,20 @@ bucket = conn.get_bucket('reddit-comments')
 for key in bucket.list():
     if '-' not in key.name.encode('utf-8'):
         continue
-    print key.name.encode('utf-8')
     logFile = 's3n://reddit-comments/' + key.name.encode('utf-8')
     year = logFile.split('-')[1][-4:] 
-    if int(year) < 2012:
-        continue
     month = logFile.split('-')[2]
+    year_month = '{0}_{1}'.format(year, month)
+    if year_month != sys.argv[1]:
+        continue
+    outputDirectory = 's3n://mark-wang-test/subreddit-graph/{0}'.format(year_month)
     df = sqlContext.read.json(logFile)
     subRedditRDD = df.filter(df['subreddit_id'] != mainRedditPageId)
-    follows = subRedditRDD.map(lambda json: (json.subreddit, ('{0}_{1}'.format(year, month), {json.author: 1})))
+    follows = subRedditRDD.map(lambda json: (json.subreddit, (year_month, {json.author: 1})))
     followsList = follows.reduceByKey(lambda a,b: (a[0], add_up_unique(a[1], b[1]))) 
+if sys.argv[2] == 's3':
+    followsList.saveAsTextFile(outputDirectory)
+elif sys.argv[2] == 'cassandra':
     followsList.foreachPartition(insert_into_cassandra)
 
 sc.stop()

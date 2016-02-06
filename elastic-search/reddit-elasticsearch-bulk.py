@@ -10,20 +10,22 @@ import boto
 from boto.s3.connection import S3Connection
 
 def download_files():
+    prefixes = ["reddit-es-comments-json/2007_10", "reddit-es-comments-json/2008_01", "reddit-es-comments-json/2008_12"]
     tmp_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/tmp/')
     conn = S3Connection(environ['AWS_ACCESS_KEY_ID'], environ['AWS_SECRET_ACCESS_KEY'])
     bucket = conn.get_bucket('mark-wang-test')
-    for key in bucket.list(prefix=environ['S3_REDDIT_DIRECTORY_NAME']):
-        if key.name.split('-')[-2][-4:] == 'part': # filter folder and _SUCCESS files
-            # make directory if it doesnt exist
-            year_month = key.name.split('/')[-2]
-            file_name = key.name.split('/')[-1]
-            if not os.path.exists("{0}/{1}".format(tmp_dir, year_month)):
-                os.system('mkdir -p {0}/{1}'.format(tmp_dir, year_month))
-            full_file_path = '{0}/{1}/{2}'.format(tmp_dir, year_month, file_name)
-            # should do check here to see if file exists or not yet
-            if not os.path.exists(full_file_path):
-                key.get_contents_to_filename(full_file_path)
+    for prefix in prefixes:
+        for key in bucket.list(prefix=prefix):
+            if key.name.split('-')[-2][-4:] == 'part': # filter folder and _SUCCESS files
+                # make directory if it doesnt exist
+                year_month = key.name.split('/')[-2]
+                file_name = key.name.split('/')[-1]
+                if not os.path.exists("{0}/{1}".format(tmp_dir, year_month)):
+                    os.system('mkdir -p {0}/{1}'.format(tmp_dir, year_month))
+                    full_file_path = '{0}/{1}/{2}'.format(tmp_dir, year_month, file_name)
+                    # should do check here to see if file exists or not yet
+                    if not os.path.exists(full_file_path):
+                        key.get_contents_to_filename(full_file_path)
     return tmp_dir
 
 hosts=["ec2-52-35-132-98.us-west-2.compute.amazonaws.com", "ec2-52-34-176-185.us-west-2.compute.amazonaws.com", "ec2-52-89-115-101.us-west-2.compute.amazonaws.com", "ec2-52-88-254-51.us-west-2.compute.amazonaws.com", "ec2-52-88-247-22.us-west-2.compute.amazonaws.com", "ec2-52-89-166-197.us-west-2.compute.amazonaws.com"]
@@ -41,6 +43,7 @@ es = Elasticsearch(
 )
 
 def main():
+    s3_reddit_prefix = 'reddit-es-comments-json'
     tmp_dir = download_files()
     for dirname in os.walk(tmp_dir):
         if dirname[0] == tmp_dir: # walk returns a tuple. first element is string of sub directory. 
@@ -53,8 +56,7 @@ def main():
                     relative_path = '/'.join([filename.split('/')[-2], filename.split('/')[-1]])
                     print "uploaded json file {0}".format(relative_path)
                     # first move file in s3
-                    reddit_comments_parent_s3_folder = environ['S3_REDDIT_DIRECTORY_NAME'].split('/')[0]
-                    os.system('aws s3 --region us-west-2 mv s3://mark-wang-test/{0}/{1} s3://mark-wang-test/reddit-finished/{1}'.format(reddit_comments_parent_s3_folder, relative_path))
+                    os.system('aws s3 --region us-west-2 mv s3://mark-wang-test/{0}/{1} s3://mark-wang-test/reddit-finished/{1}'.format(s3_reddit_prefix, relative_path))
                     # then remove from local
                     os.remove(filename) 
                 except Exception as e:

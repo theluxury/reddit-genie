@@ -1,6 +1,6 @@
 <script src="/static/js/d3.v3.js" charset="utf-8"></script>
 <script src="/static/js/d3.layout.cloud.js" charset="utf-8"></script>
-<div id="word-cloud"></div>
+<div id="word-cloud" style="margin-left:200px"></div>
 
 <script type="text/javascript">
 
@@ -12,10 +12,12 @@ var color = d3.scale.linear()
 .range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", "#777", "#666", "#555", "#444", "#333", "#222"]);
 var fill = d3.scale.category20();
 
+var biggest = frequency_list[0]['size'];
+
 d3.layout.cloud().size([800, 300])
 .words(frequency_list)
 .rotate(0)
-.fontSize(function(d) { return d.size * 8; })
+.fontSize(function(d) { return d.size * 80 / biggest; })
 .on("end", draw)
 .start();
 

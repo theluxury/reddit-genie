@@ -10,7 +10,7 @@ class ESHelper():
             sniff_on_start=True,    # sniff before doing anything
             sniff_on_connection_fail=True,    # refresh nodes after a node fails to respond
             sniffer_timeout=60, # and also every 60 seconds
-            timeout=30
+            timeout=60
             )
 
     def get_top_users(self, subreddit, year_month, num_users):
@@ -62,7 +62,7 @@ class ESHelper():
             return []
         else:
             words_list = []
-            bad_words_set = {topic, 'm', 'people', 'think','going', 'something', 'guy', 'things'}
+            bad_words_set = {topic, 'm', 'people', 'think','going', 'something', 'guy', 'things', 'anything', 'really', 'person'}
             for json_element in response['aggregations']['text']['buckets']:
                 if json_element['key'] not in bad_words_set:
                     words_list.append({'text': json_element['key'], 'size': json_element['doc_count']})

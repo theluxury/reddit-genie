@@ -21,20 +21,24 @@ def search():
     form = SearchForm()
     if form.validate_on_submit():
         es_helper = ESHelper()
-        top_users = es_helper.get_top_users(form.subreddit.data, form.year_month.data, 1000)
+        top_users = es_helper.get_top_users(form.subreddit.data, form.year_month.data, 10000)
         top_words = es_helper.get_top_words(form.topic.data, form.year_month.data, top_users, 200)
         if not top_words:
             print "nope"
             flash("Didn't get any results.:( Are you sure you put the right things in? Remember subreddit is case sensitive.")
         else:
-            print top_words
             return render_template('results.html', title="Reddit Genie", form=form, words=json.dumps(top_words))
     else:
-        flash("You didn't fill the form right. :(")
+        # TODO: do I want this?
+        print "filler"
+#       flash("You didn't fill the form right. :(")
     return render_template('search.html',
                            title='Reddit Genie',
                            form=form)
         
+@app.route('/bar_results')
+def bar_results():
+    return render_template('bar_results.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -66,11 +70,4 @@ def index():
                            user=user,
                            posts=posts)
 
-
-@app.route('/query/<searchWord>/<subreddit>/<year_month>')
-def query(searchWord, subreddit, year_month):
-    os.system("pwd")
-    os.system("python quicky.py {0} {1} {2} > meh.txt".format(searchWord, subreddit, year_month))
-    os.system("python another-quicky.py")
-    return 'plz work'
     

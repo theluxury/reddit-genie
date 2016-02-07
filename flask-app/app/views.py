@@ -9,8 +9,6 @@ from .forms import LoginForm, SearchForm
 from es_helper import ESHelper
 import json
 
-
-
 @app.route('/')
 @app.route('/bootstrap-index')
 def bootstrap():
@@ -18,23 +16,29 @@ def bootstrap():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
+    top_users=""
+    top_words=""
+    top_other_subreddits=""
     form = SearchForm()
     if form.validate_on_submit():
         es_helper = ESHelper()
         top_users = es_helper.get_top_users(form.subreddit.data, form.year_month.data, 10000)
         top_words = es_helper.get_top_words(form.topic.data, form.year_month.data, top_users, 200)
+        top_other_subreddits = es_helper.get_top_other_subreddits(form.topic.data, form.year_month.data, top_users, 200)
         if not top_words:
-            print "nope"
             flash("Didn't get any results.:( Are you sure you put the right things in? Remember subreddit is case sensitive.")
         else:
-            return render_template('results.html', title="Reddit Genie", form=form, words=json.dumps(top_words))
+            return render_template('results.html', title="Reddit Genie", form=form, words=json.dumps(top_words), subreddits=json.dumps(top_other_subreddits), topic=form.topic.data)
     else:
+        print 'filler'
         # TODO: do I want this?
-        print "filler"
 #       flash("You didn't fill the form right. :(")
     return render_template('search.html',
                            title='Reddit Genie',
-                           form=form)
+                           form=form, 
+                           words=json.dumps(top_words), 
+                           subreddits=json.dumps(top_other_subreddits),
+                           topic=form.topic.data)
         
 @app.route('/bar_results')
 def bar_results():

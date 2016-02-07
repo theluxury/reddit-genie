@@ -1,0 +1,2 @@
+CASSANDRA_CLUSTER_IP_LIST=['52.89.166.197', '52.89.166.250', '52.89.167.189', '52.89.167.219']
+ES_CLUSTER_PUBLIC_DNS_LIST=["ec2-52-35-132-98.us-west-2.compute.amazonaws.com", "ec2-52-34-176-185.us-west-2.compute.amazonaws.com", "ec2-52-89-115-101.us-west-2.compute.amazonaws.com", "ec2-52-88-254-51.us-west-2.compute.amazonaws.com", "ec2-52-88-247-22.us-west-2.compute.amazonaws.com", "ec2-52-89-166-197.us-west-2.compute.amazonaws.com"]

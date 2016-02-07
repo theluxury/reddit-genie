@@ -12,10 +12,12 @@
 *.pyc
 *.sh~
 *.py#
+*.txt~
 
 # OTHER #
 #########
 tmp/
 logs/
+dummy/
 *.out
 .DS_Store

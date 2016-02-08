@@ -1,15 +1,168 @@
-<!-- extend from base layout -->
-{% extends "base.html" %}
+<html>
+<head>
+<title>Highcharts Tutorial</title>
+   <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+   <script src="http://code.highcharts.com/highcharts.js"></script>  
+</head>
+<body>
+<div id="container" style="width: 550px; height: 400px; margin: 0 auto"></div>
+<script language="JavaScript">
+$(document).ready(function() {  
+   var fakeJson = [{'name':'one', 'value':1}, {'name':'two', 'value':2}];
+   var chart = {
+      type: 'bar'
+   };
+   var title = {
+      text: 'Historic World Population by Region'   
+   };
+   var subtitle = {
+      text: 'Source: Wikipedia.org'  
+   };
+var jsonArray = [];
+for (var i = 0; i < fakeJson.length; i++) {
+jsonArray.push(fakeJson[i]['name']);
+}
+   var xAxis = {
+      categories: jsonArray,
+      title: {
+         text: null
+      }
+   };
+   var yAxis = {
+      min: 0,
+      title: {
+         text: 'Population (millions)',
+         align: 'high'
+      },
+      labels: {
+         overflow: 'justify'
+      }
+   };
+   var tooltip = {
+      valueSuffix: ' millions'
+   };
+   var plotOptions = {
+      bar: {
+         dataLabels: {
+            enabled: true
+         }
+      }
+   };
+   var legend = {
+      layout: 'vertical',
+      align: 'right',
+      verticalAlign: 'top',
+      x: -40,
+      y: 100,
+      floating: true,
+      borderWidth: 1,
+      backgroundColor: ((Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'),
+      shadow: true
+   };
+   var credits = {
+      enabled: false
+   };
+   
+   var series= [{
+         name: 'Year 1800',
+            data: [107, 31, 635, 203, 2]
+        }, {
+            name: 'Year 1900',
+            data: [133, 156, 947, 408, 6]
+        }, {
+            name: 'Year 2008',
+            data: [973, 914, 4054, 732, 34]      
+    }
+   ];     
+      
+   var json = {};   
+   json.chart = chart; 
+   json.title = title;   
+   json.subtitle = subtitle; 
+   json.tooltip = tooltip;
+   json.xAxis = xAxis;
+   json.yAxis = yAxis;  
+   json.series = series;
+   json.plotOptions = plotOptions;
+   json.legend = legend;
+   json.credits = credits;
+   $('#container').highcharts(json);
+  
+});
+</script>
+</body>
+</html>
 
-{% block content %}
-  <h1>Sign In</h1>
-  <form action="" method="post" name="login">
-      {{ form.hidden_tag() }}
-      <p>
-          Please enter your OpenID:<br>
-          {{ form.openid(size=80) }}<br>
-      </p>
-      <p>{{ form.remember_me }} Remember Me</p>
-      <p><input type="submit" value="Sign In"></p>
-  </form>
-{% endblock %}
+
+
+
+
+<!--
+<script type="text/javascript">
+  //Width and height
+  var w = 800;
+  var h = 300;
+  var barPadding = 1;  
+  var padding=30;
+  var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
+  11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+ 
+
+  var yScale = d3.scale.linear()
+  .domain([0, 40])
+  .range([padding, h - padding]);
+
+  var svg = d3.select("body")
+  .append("svg")
+  .attr("width", w)
+  .attr("height", h);
+
+  svg.selectAll("rect")
+  .data(dataset)
+  .enter()
+  .append("rect")
+  .attr("x", function(d, i) {
+  return i * (w / dataset.length);
+  })
+  .attr("y", function(d) {
+  return h - yScale(d);  //Height minus data value
+  })
+  .attr("width", w / dataset.length - barPadding)
+  .attr("height", function(d) {
+  return yScale(d);  //Just the data value
+  })
+  .attr("fill", "red");
+
+  svg.selectAll("text")
+  .data(dataset)
+  .enter()
+  .append("text")
+  .text(function(d) {
+  return d;
+  })
+  .attr("x", function(d, i) {
+  return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2;
+  })
+  .attr("y", function(d) {
+  return h - yScale(d) + 15;  //15 is now 14
+  })
+  .attr("font-family", "sans-serif")
+  .attr("font-size", "11px")
+  .attr("fill", "white")
+  .attr("text-anchor", "middle");
+
+  var invertedyScale = d3.scale.linear()
+  .domain([0, 40])
+  .range([h - padding, padding]);
+
+  var yAxis = d3.svg.axis()
+  .scale(invertedyScale)
+  .orient("left")
+  .ticks(5);
+
+  svg.append("g")
+  .attr("class", "axis")
+  .attr("transform", "translate(" + 30 + ",0)")
+  .call(yAxis);
+   </script>
+ -->

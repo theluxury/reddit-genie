@@ -1,0 +1,58 @@
+{# This simple template derives from ``base.html``. See ``base.html`` for
+   more information about template inheritance. #}
+{%- extends "bootstrap.html" %}
+
+{# Loads some of the macros included with Flask-Bootstrap. We are using the
+   utils module here to automatically render Flask's flashed messages in a
+   bootstrap friendly manner #}
+{% import "bootstrap/utils.html" as utils %}
+
+
+{# Inside the ``content`` is where you should place most of your own stuff.
+   This will keep scripts at the page end and a navbar you add on later
+   intact. #}
+{% block content %}
+<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<div class="container">
+  {%- with messages = get_flashed_messages(with_categories=True) %}
+  {%- if messages %}
+  <div class="row">
+    <div class="col-md-12">
+      {{utils.flashed_messages(messages)}}
+    </div>
+  </div>
+  {%- endif %}
+  {%- endwith %}
+  <div class="jumbotron">
+    <h1>Welcome to Reddit Genie</h1>
+  </div>
+  <div>
+    <h2>Reddit Genie</h2>
+    <img src="http://adiumxtras.com/images/pictures/reddit_alien_1_3582_2149_image_7961.gif"><br>
+<!--    <form action="" method="post" name="login">
+      {{ form.hidden_tag() }}
+      <p>
+	Find out about <input type="text" name="subreddit" placeholder="programming"> users who talked about <input type="text" name="topic" placeholder="cats"> during <input type="month" name="year_month"> across all of Reddit.
+      </p>
+      <p>Note: Fields are case sensitives</p>
+      <input type="submit" class="btn btn-primary" value="Rub The Lamp">
+    </form> -->
+<div class="bar"></div>
+    <script type="text/javascript">
+      var dataset = [ 5, 10, 15, 20, 25 ];
+      dataset = 
+      d3.select("body").selectAll("p")
+      .data(dataset)
+      .enter()
+      .append("p")
+      .text(function(d) { return d; })
+      .style("color", function(d) {
+      if (d > 15) {   //Threshold of 15
+      return "red";
+      } else {
+      return "black";
+      }
+      });
+    </script>
+  </div>
+  {% endblock %}

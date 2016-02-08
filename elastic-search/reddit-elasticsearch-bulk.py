@@ -10,7 +10,7 @@ import boto
 from boto.s3.connection import S3Connection
 
 def download_files():
-    prefixes = ["reddit-es-comments-json/2007_10", "reddit-es-comments-json/2008_01", "reddit-es-comments-json/2008_12"]
+    prefixes = ["reddit-es-comments-json/2014_01", "reddit-es-comments-json/2014_12"]
     tmp_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/tmp/')
     conn = S3Connection(environ['AWS_ACCESS_KEY_ID'], environ['AWS_SECRET_ACCESS_KEY'])
     bucket = conn.get_bucket('mark-wang-test')

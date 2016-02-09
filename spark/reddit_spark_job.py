@@ -30,6 +30,7 @@ def get_filtered_string(original_string):
     filtered_tokenized_list = [word for word in tokenized_list if word not in FILTER_SET]
     return ' '.join(filtered_tokenized_list)
 
+<<<<<<< HEAD
 def main():
     sc = SparkContext(SPARK_ADDRESS, "Reddit JSON Parser App")
     sql_context = SQLContext(sc)
@@ -54,6 +55,28 @@ def main():
             my_key.delete()
         final_rdd.saveAsTextFile(output_directory)
     sc.stop()
+=======
+conn = S3Connection(environ['AWS_ACCESS_KEY_ID'], environ['AWS_SECRET_ACCESS_KEY'])
+reddit_bucket = conn.get_bucket('reddit-comments')
+my_bucket = conn.get_bucket('mark-wang-test')
+for key in reddit_bucket.list():
+    if '-' not in key.name.encode('utf-8'):
+        continue
+    log_file = 's3n://reddit-comments/' + key.name.encode('utf-8')
+    year = log_file.split('-')[1][-4:]
+    month = log_file.split('-')[2]
+    if int(year) < 2015 or (int(year) == 2015 and int(month) < 2):
+        continue
+    year_month = '{0}_{1}'.format(year, month)
+    df = sql_context.read.json(log_file)
+    filtered_df = df.filter(df.author != '[deleted]')
+    final_rdd = filtered_df.map(lambda line: elastic_search_mapper(line, year_month))#.repartition(600)
+    output_directory = 's3n://mark-wang-test/reddit-es-comments-json/{0}/'.format(year_month)
+    for my_key in my_bucket.list(prefix='reddit-es-comments-json/{0}'.format(year_month)):
+        my_key.delete()
+    final_rdd.saveAsTextFile(output_directory)
+    # final_rdd.foreachPartition(put_to_elasticsearch)
+>>>>>>> master
 
 if __name__ == '__main__':
     main()

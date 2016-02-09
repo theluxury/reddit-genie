@@ -2,8 +2,6 @@ from pyspark import SparkContext, SQLContext
 import sys
 import ast
 from cassandra.cluster import Cluster
-from cassandra.query import BatchStatement
-from cassandra import ConsistencyLevel
 from boto.s3.connection import S3Connection
 import os
 from os import environ
@@ -37,7 +35,6 @@ def insert_into_cassandra(partition):
         cluster = Cluster(CASSANDRA_CLUSTER_IP_LIST)
         session = cluster.connect(KEY_SPACE)
         prepared_stmt = session.prepare("INSERT INTO {0} ({1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)".format(GRAPH_NAME, COLUMN_ONE, COLUMN_TWO, COLUMN_THREE, COLUMN_FOUR, COLUMN_FIVE, COLUMN_SIX, COLUMN_SEVEN, COLUMN_EIGHT, COLUMN_NINE, COLUMN_TEN))
-        batch = BatchStatement(consistency_level=ConsistencyLevel.ONE)
         for item in partition:
             bound_stmt = prepared_stmt.bind([item[0], item[1], int(item[2]) * 1000, item[3], item[4], item[5], item[6], item[7], item[8], item[9]])
             session.execute(bound_stmt)

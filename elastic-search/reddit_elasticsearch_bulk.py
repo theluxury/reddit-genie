@@ -13,7 +13,7 @@ from instances import ES_CLUSTER_PUBLIC_DNS_LIST
 from aws import REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, MY_BUCKET, MY_BUCKET_S3_REDDIT_PREFIX
 
 def download_files():
-    prefixes = ["reddit-es-comments-json/2007_10", "reddit-es-comments-json/2008_01", "reddit-es-comments-json/2008_12"]
+    prefixes = ["reddit-es-comments-json/2014_01", "reddit-es-comments-json/2014_12"]
     tmp_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/tmp/')
     conn = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
     bucket = conn.get_bucket(MY_BUCKET)

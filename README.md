@@ -19,7 +19,7 @@ and download stopwords and punkt. Now you're ready to run my code!
 Word cloud, membership, filter by time, etc.
 
 <h3>Data Source</h3>
-~1TB of reddit data https://bigquery.cloud.google.com/dataset/fh-bigquery:reddit_comments. My dataset is only until June, 2015 though since I ran out of HD space. 
+~900GB of reddit data https://bigquery.cloud.google.com/dataset/fh-bigquery:reddit_comments from Obtobe,r 2007 until June, 2015 though since I ran out of HD space. 
 
 #4: AWS Cluster Structure
 

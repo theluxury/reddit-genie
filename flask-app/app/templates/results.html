@@ -1,6 +1,10 @@
 <script src="/static/js/d3.v3.js" charset="utf-8"></script>
 <script src="/static/js/d3.layout.cloud.js" charset="utf-8"></script>
-<div id="word-cloud" style="margin-left:200px"></div>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+
+<div id="word-cloud" style="width:800px; height: 300px; margin:30px auto"></div>
+<div id="container" style="width: 550px; height: 400px; margin:100px auto"></div>
 
 <script type="text/javascript">
 
@@ -40,4 +44,52 @@ return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
 .text(function(d) { return d.text; });
 }
 
+$(document).ready(function() {
+   var subreddit_frequency_list = JSON.parse({{subreddits|tojson}});
+   var chart = {
+       plotBackgroundColor: null,
+       plotBorderWidth: null,
+       plotShadow: false
+   };
+   var title = {
+      text: 'What subreddits {{topic}} was mentioned in among your audience.'
+   };
+   var tooltip = {
+      pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+   };
+   var plotOptions = {
+      pie: {
+         allowPointSelect: true,
+         cursor: 'pointer',
+         dataLabels: {
+            enabled: true,
+            format: '<b>{point.name}%</b>: {point.percentage:.1f} %',
+            style: {
+               color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+            }
+         }
+      }
+   };
+   // So need a function here to parse the json data.
+   chart_data = [];
+   for (var i = 0; i < subreddit_frequency_list.length; i++) {
+      new_json = {};
+      new_json.name = subreddit_frequency_list[i].text;
+      new_json.y = subreddit_frequency_list[i].size;
+      chart_data.push(new_json);
+   }
+   var series= [{
+      type: 'pie',
+      name: 'Subreddit share',
+      data: chart_data
+   }];
+
+   var json = {};
+   json.chart = chart;
+   json.title = title;
+   json.tooltip = tooltip;
+   json.series = series;
+   json.plotOptions = plotOptions;
+   $('#container').highcharts(json);
+});
   </script>

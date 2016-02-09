@@ -10,8 +10,11 @@ class ESHelper():
             sniff_on_start=True,    # sniff before doing anything
             sniff_on_connection_fail=True,    # refresh nodes after a node fails to respond
             sniffer_timeout=60, # and also every 60 seconds
-            timeout=60
+            timeout=30
             )
+
+    def convert_year_month(self, year_month):
+        return year_month.replace('-', '_')
 
     def get_top_users(self, subreddit, year_month, num_users):
         response = self.es.search(index='reddit_filtered_{0}'.format(year_month), body={

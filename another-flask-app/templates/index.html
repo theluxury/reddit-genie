@@ -1,0 +1,176 @@
+{# This simple template derives from ``base.html``. See ``base.html`` for
+   more information about template inheritance. #}
+{%- extends "bootstrap/base.html" %}
+
+{# Loads some of the macros included with Flask-Bootstrap. We are using the
+   utils module here to automatically render Flask's flashed messages in a
+   bootstrap friendly manner #}
+{% import "bootstrap/utils.html" as utils %}
+
+
+{# Inside the ``content`` is where you should place most of your own stuff.
+   This will keep scripts at the page end and a navbar you add on later
+   intact. #}
+{% block content %}
+<link type="text/css" rel="stylesheet" href="/static/style.css"/>
+<link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="static/reddit.css">
+
+<script src="/static/js/d3.v3.js" charset="utf-8"></script>
+<script src="/static/js/d3.layout.cloud.js" charset="utf-8"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+<div class="se-pre-con" style="display:none"></div>
+<center><br>
+<div class="container">
+  {%- with messages = get_flashed_messages(with_categories=True) %}
+  {%- if messages %}
+  <div class="row">
+    <div class="col-md-12">
+      {{utils.flashed_messages(messages)}}
+    </div>
+  </div>
+  {%- endif %}
+  {%- endwith %}
+  <div class="jumbotron" style="width:90%; height:200px">
+      <a href="http://www.google.com">
+	<img src="static/images/slideshare_logo.png" style="float:left; width:100px; margin-top:-20px">
+      </a>
+      <a href="https://github.com/theluxury/reddit-genie">
+	 <img src="static/images/github_logo.png" style="float:left; width:100px; margin-top:40px; margin-left:-100px">
+      </a>
+      <a href="https://www.linkedin.com/in/markwang84">
+	 <img src="static/images/linkedin_logo.png" style="float:left; width:100px; margin-top:100px; margin-left:-98px">
+      </a>
+      <h1 style="margin-right:100px; font-size:80px">reddit genie</h1>
+      <img src="static/images/redditgenie.png" style="height: 200px; float:right; margin-top:-170px">
+  </div>
+  <div id="search" style="width:90%">
+
+      <form action="rub" method="post">
+        <fieldset class="clearfix">
+
+          Find out about
+
+          <input type="search" name="subreddit" value="subreddit" onBlur="if(this.value=='')this.value='subreddit'" onFocus="if(this.value=='subreddit')this.value='' ">
+
+          users who talked about
+
+          <input type="search" name="topic" value="topics" onBlur="if(this.value=='')this.value='topics" onFocus="\
+if(this.value=='topics')this.value='' ">
+
+          during
+
+          <input type="month" name="year_month">
+
+          across all of reddit.
+
+          <br><br><input type="submit" value="Rub the Lamp" class="button" onclick="myFunction()">
+
+          <br><br><font color="#336699"><font color="#ff4500">Tips:</font> Case sensitive. Leave "topics" blank for general charts. Enter multiple "topics" by using commas.</font>
+
+            </fieldset>
+
+        </form>
+
+      </div> <!-- end search -->  
+  </div> <!-- end container -->
+</center>
+<div id="word-cloud" style="width:800px; height: 300px; margin:30px auto"></div>
+<div id="bar-graff" style="width: 550px; height: 400px; margin:100px auto"></div>
+
+
+<script type="text/javascript">
+
+function myFunction() {
+$(".se-pre-con").fadeIn("slow");
+}
+
+var frequency_list = {{words|tojson}};
+var color = d3.scale.linear()
+.domain([0,1,2,3,4,5,6,10,15,20,100])
+.range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", "#777", "#666", "#555", "#444", "#333", "#222"]);
+var fill = d3.scale.category20();
+
+var biggest = frequency_list[0]['size'];
+
+d3.layout.cloud().size([800, 300])
+.words(frequency_list)
+.rotate(0)
+.fontSize(function(d) { return d.size * 80 / biggest; })
+.on("end", draw)
+.start();
+
+function draw(words) {
+d3.select("#word-cloud").append("svg")
+.attr("width", 850)
+.attr("height", 350)
+.attr("class", "wordcloud")
+.append("g")
+// without the transform, words words would get cutoff to the left and top, they would
+// appear outside of the SVG area
+.attr("transform", "translate(320,200)")
+.selectAll("text")
+.data(words)
+.enter().append("text")
+.style("font-size", function(d) { return d.size + "px"; })
+.style("fill", function(d, i) { return fill(i); })
+.attr("transform", function(d) {
+return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+})
+.text(function(d) { return d.text; });
+}
+
+$(document).ready(function() {
+   var subreddit_frequency_list = {{subreddits|tojson}};
+   var chart = {
+       plotBackgroundColor: null,
+       plotBorderWidth: null,
+       plotShadow: false,
+       renderTo: 'bar-graff'
+   };
+   var title = {
+      text: 'What subreddits topic was mentioned in among your audience.'
+   };
+   var tooltip = {
+      pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+   };
+   var plotOptions = {
+      pie: {
+         allowPointSelect: true,
+         cursor: 'pointer',
+         dataLabels: {
+            enabled: true,
+            format: '<b>{point.name}%</b>: {point.percentage:.1f} %',
+            style: {
+               color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+            }
+         }
+      }
+   };
+   // So need a function here to parse the json data.
+   chart_data = [];
+   for (var i = 0; i < subreddit_frequency_list.length; i++) {
+      new_json = {};
+      new_json.name = subreddit_frequency_list[i].text;
+      new_json.y = subreddit_frequency_list[i].size;
+      chart_data.push(new_json);
+   }
+   var series= [{
+      type: 'pie',
+      name: 'Subreddit share',
+      data: chart_data
+   }];
+
+   var json = {};
+   json.chart = chart;
+   json.title = title;
+   json.tooltip = tooltip;
+   json.series = series;
+   json.plotOptions = plotOptions;
+   var chart = new Highcharts.Chart(json);
+});
+
+</script>
+{% endblock %}

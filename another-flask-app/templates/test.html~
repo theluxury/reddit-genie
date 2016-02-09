@@ -1,0 +1,85 @@
+{# This simple template derives from ``base.html``. See ``base.html`` for
+   more information about template inheritance. #}
+{%- extends "bootstrap/base.html" %}
+
+{# Loads some of the macros included with Flask-Bootstrap. We are using the
+   utils module here to automatically render Flask's flashed messages in a
+   bootstrap friendly manner #}
+{% import "bootstrap/utils.html" as utils %}
+
+
+{# Inside the ``content`` is where you should place most of your own stuff.
+   This will keep scripts at the page end and a navbar you add on later
+   intact. #}
+{% block content %}
+
+<html lang="en-US">
+<head>
+
+  <meta charset="utf-8">
+
+  <title>reddit genie</title>
+
+  <link href="http://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="static/reddit.css">
+  <!--[if lt IE 9]>
+      <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+  
+  <script>
+    // Wait for window load
+    $(window).load(function() {
+    // Animate loader off screen
+    $(".se-pre-con").fadeOut("slow");;
+    });
+    </script>
+
+</head>
+<body>
+<!--<div class="se-pre-con"></div>-->
+<center>
+<br>
+
+  <div class="container">
+    <div class="jumbotron" style="width:80%">
+      <h1 style="float:left">reddit genie</h1>
+<!--      <img src="static/images/redditgenie.png" style="height: 200px"> -->
+    </div>
+    <div id="search" style="width:80%">
+
+      <form action="javascript:void(0);" method="GET">
+	<fieldset class="clearfix">
+	  
+	  Find out about
+
+	  <input type="search" name="search" value="subreddit" onBlur="if(this.value=='')this.value='subreddit'" onFocus="if(this.value=='subreddit')this.value='' ">
+
+	  users who talked about 
+
+	  <input type="search" name="search" value="topics" onBlur="if(this.value=='')this.value='topics" onFocus="if(this.value=='topics')this.value='' ">
+
+	  during 
+
+	  <input type="month" name="month">
+
+	  across all of reddit.
+
+	  <br><br><input type="submit" value="Rub the Lamp" class="button">
+
+	  <br><br><font color="#336699"><font color="#ff4500">Tips:</font> Case sensitive. Leave "topics" blank for general charts. Enter multiple "topics" by using commas.</font>
+
+	    </fieldset>
+
+	</form>
+
+      </div> <!-- end search -->
+
+    </div> <!-- end container -->
+</center>
+</body>
+</html>
+{% endblock %}
+

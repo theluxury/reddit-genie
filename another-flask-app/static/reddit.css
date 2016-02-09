@@ -1,0 +1,114 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* ---------- PRELOADER -------- */
+
+.no-js #loader { display: none;  }
+.js #loader { display: block; position: absolute; left: 100px; top: 0; }
+.se-pre-con {
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 9999;
+	background: url(images/Preloader.gif) center no-repeat #fff;
+}
+
+/* ---------- GENERAL ---------- */
+
+body {
+	background: #ffffff;
+	color: #000;
+	font: 14px/1.5em "Open Sans", sans-serif;
+	margin: 0;
+}
+
+fieldset {
+	border: 0;
+	margin: 10;
+	padding: 30;
+}
+
+input {
+	border: none;
+	font-family: inherit;
+	font-size: inherit;
+	line-height: 1.5em;
+	margin: 0;
+	outline: none;
+	padding: 0;
+	-webkit-appearance: none;
+}
+
+input[type="search"] {
+    -webkit-appearance: textfield;
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+.clearfix { *zoom: 1; }
+.clearfix:before, .clearfix:after {
+	content: "";
+	display: table;	
+}
+.clearfix:after { clear: both; }
+
+/* ---------- SEARCH ---------- */
+
+#search {
+	background: #cee3f8;
+	border-radius: 5px;
+	display: inline-block;
+	padding: 25px;
+}
+
+#search input {
+	float: inline;
+}
+
+#search input[type="search"],
+#search input[type="submit"],
+#search input[type="month"]{
+	border-radius: 3px;
+	font-size: 12px;
+}
+
+#search input[type="search"] {
+	background: #fff;
+	color: #939393;
+  font-weight: medium;
+	min-width: 100px;
+	padding: 6px 8px;
+}
+
+#search input[type="month"] {
+	background: #fff;
+	color: #939393;
+  font-weight: medium;
+	min-width: 100px;
+	padding: 6px 8px;
+}
+
+#search input[type="submit"] {
+	background: #336699;
+	color: #fff;
+	font-weight: medium;
+	margin-left: 0px;
+	padding: 8px 30px;
+}
+
+
+#search input[type="submit"]:hover {
+	background: #ff4500;
+}
+
+#search input[type="search"]::-webkit-input-placeholder { color: #42454e; }
+#search input[type="search"]:-moz-placeholder { color: #42454e; }
+#search input[type="search"]:-ms-input-placeholder { color: #42454e; }

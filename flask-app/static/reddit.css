@@ -108,7 +108,8 @@ input[type="search"]::-webkit-search-decoration {
 #search input[type="submit"]:hover {
 	background: #ff4500;
 }
-
+/*
 #search input[type="search"]::-webkit-input-placeholder { color: #42454e; }
 #search input[type="search"]:-moz-placeholder { color: #42454e; }
 #search input[type="search"]:-ms-input-placeholder { color: #42454e; }
+*/

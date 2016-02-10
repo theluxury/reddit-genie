@@ -1,23 +1,26 @@
 from cassandra.cluster import Cluster
-from heapq import heappush, heappop
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/config/')
+from instances import CASSANDRA_CLUSTER_IP_LIST
+from heapq import heappush, heappop, heappushpop
 
-def main():
-    cluster_ips = ['52.88.244.205', '52.35.233.194', '52.34.55.16', '52.89.167.189']
-    keyspace = 'reddit'
-    table = 'comments'
-    some_values = ['dlmcleo1', '2013_10']
-    cluster = Cluster(cluster_ips)
-    session = cluster.connect(keyspace)
-    prepared_stmt = session.prepare("select * from {0} where (author = ?) and (year_month = ?)".format(table))
-    bound_stmt = prepared_stmt.bind(some_values)
-    rows = session.execute(bound_stmt)
+class CassandraHelper():
+    def __init__(self):
+        KEYSPACE = 'reddit'
+        TABLE = 'comments'
+        cluster = Cluster(CASSANDRA_CLUSTER_IP_LIST)
+        self.session = cluster.connect(KEYSPACE)
+        self.prepared_stmt = self.session.prepare("select body from {0} where (author = ?) and (year_month = ?) and (created_utc = ?) and (subreddit = ?) and (id = ?)".format(TABLE))
 
-    score_queue = []
-    # probably want, uh, a queue with score.
-    for row in rows:
-        heappush(score_queue, (-row.score, row.body))
+    def get_highest_ranked_comments(self, filtered_comments_list, year_month):
+        top_comments = []
+        for comment in filtered_comments_list:
+            bound_stmt = self.prepared_stmt.bind([comment['author'], year_month, comment['created_utc'], comment['subreddit'], comment['id']])
+            row = self.session.execute(bound_stmt)
+            top_comments.append(row[0].body)
 
-    print heappop(score_queue)
-    print heappop(score_queue)
-if __name__ == '__main__':
-    main()
+#        print top_comments
+
+    def close_session(self):
+        self.session.close()

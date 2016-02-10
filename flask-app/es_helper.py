@@ -98,3 +98,26 @@ class ESHelper():
             for json_element in response['aggregations']['text']['buckets']:
                     subreddit_list.append({'text': json_element['key'], 'size': json_element['doc_count']})
             return subreddit_list
+
+    def get_top_comments_by_score(self, topic, year_month, users, num_comments):
+        response = self.es.search(index='reddit_filtered_{0}'.format(year_month), body={
+            "size": num_comments,
+            "fields": ["author", "created_utc", "subreddit"],
+            "query": {
+                "bool": {
+                    "filter": [
+                        { "match": {"filtered_body": topic}},
+                        { "terms" : { "author": users }}
+                    ]
+                }
+            },
+            "sort": { "score": { "order": "desc" }}
+        })
+        if response['timed_out'] == True:
+            return []
+        else:
+            subreddit_list = []
+            for json_element in response['hits']['hits']:
+                fields=json_element['fields']
+                subreddit_list.append({'id': json_element['_id'], 'score': json_element['sort'][0], 'author': fields['author'][0], 'created_utc': long(fields['created_utc'][0]) * 1000, 'subreddit': fields['subreddit'][0]})
+            return subreddit_list

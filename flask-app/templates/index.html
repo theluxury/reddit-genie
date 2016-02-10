@@ -21,6 +21,9 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+<script src="static/js/create_d3_wordcloud.js"></script>
+<script src="static/js/create_pi_chart.js"></script>
+
 <div class="se-pre-con" style="display:none"></div>
 <center><br>
 <div class="container">
@@ -53,22 +56,21 @@
 
           Find out about
 
-          <input type="search" name="subreddit" value="subreddit" onBlur="if(this.value=='')this.value='subreddit'" onFocus="if(this.value=='subreddit')this.value='' ">
+          <input style="color:black" type="search" name="subreddit" placeholder="subreddit">
 
           users who talked about
 
-          <input type="search" name="topic" value="topics" onBlur="if(this.value=='')this.value='topics" onFocus="\
-if(this.value=='topics')this.value='' ">
+          <input style="color:black" type="search" name="topic" placeholder="topic">
 
           during
 
-          <input type="month" name="year_month">
+          <input style="color:black" type="month" name="year_month" value="2014-12">
 
           across all of reddit.
 
           <br><br><input type="submit" value="Rub the Lamp" class="button" onclick="myFunction()">
 
-          <br><br><font color="#336699"><font color="#ff4500">Tips:</font> Case sensitive. Leave "topics" blank for general charts. Enter multiple "topics" by using commas.</font>
+          <br><br><font color="#336699"><font color="#ff4500">Tip:</font> Subreddit input is case sensitive.</font>
 
             </fieldset>
 
@@ -87,89 +89,9 @@ function myFunction() {
 $(".se-pre-con").fadeIn("slow");
 }
 
-var frequency_list = {{words|tojson}};
-var color = d3.scale.linear()
-.domain([0,1,2,3,4,5,6,10,15,20,100])
-.range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", "#777", "#666", "#555", "#444", "#333", "#222"]);
-var fill = d3.scale.category20();
-
-var biggest = frequency_list[0]['size'];
-
-d3.layout.cloud().size([800, 300])
-.words(frequency_list)
-.rotate(0)
-.fontSize(function(d) { return d.size * 80 / biggest; })
-.on("end", draw)
-.start();
-
-function draw(words) {
-d3.select("#word-cloud").append("svg")
-.attr("width", 850)
-.attr("height", 350)
-.attr("class", "wordcloud")
-.append("g")
-// without the transform, words words would get cutoff to the left and top, they would
-// appear outside of the SVG area
-.attr("transform", "translate(320,200)")
-.selectAll("text")
-.data(words)
-.enter().append("text")
-.style("font-size", function(d) { return d.size + "px"; })
-.style("fill", function(d, i) { return fill(i); })
-.attr("transform", function(d) {
-return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-})
-.text(function(d) { return d.text; });
-}
-
 $(document).ready(function() {
-   var subreddit_frequency_list = {{subreddits|tojson}};
-   var chart = {
-       plotBackgroundColor: null,
-       plotBorderWidth: null,
-       plotShadow: false,
-       renderTo: 'bar-graff'
-   };
-   var title = {
-      text: 'What subreddits topic was mentioned in among your audience.'
-   };
-   var tooltip = {
-      pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-   };
-   var plotOptions = {
-      pie: {
-         allowPointSelect: true,
-         cursor: 'pointer',
-         dataLabels: {
-            enabled: true,
-            format: '<b>{point.name}%</b>: {point.percentage:.1f} %',
-            style: {
-               color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-            }
-         }
-      }
-   };
-   // So need a function here to parse the json data.
-   chart_data = [];
-   for (var i = 0; i < subreddit_frequency_list.length; i++) {
-      new_json = {};
-      new_json.name = subreddit_frequency_list[i].text;
-      new_json.y = subreddit_frequency_list[i].size;
-      chart_data.push(new_json);
-   }
-   var series= [{
-      type: 'pie',
-      name: 'Subreddit share',
-      data: chart_data
-   }];
-
-   var json = {};
-   json.chart = chart;
-   json.title = title;
-   json.tooltip = tooltip;
-   json.series = series;
-   json.plotOptions = plotOptions;
-   var chart = new Highcharts.Chart(json);
+   create_d3_wordcloud({{words|tojson}});
+   create_pi_chart({{subreddits|tojson}}, "{{topic}}");
 });
 
 </script>

@@ -19,5 +19,6 @@
 tmp/
 logs/
 dummy/
+cronjob/
 *.out
 .DS_Store

@@ -70,6 +70,7 @@ class ESHelper():
                 if json_element['key'] not in bad_words_set:
                     words_list.append({'text': json_element['key'], 'size': json_element['doc_count']})
             return words_list
+    
 
     def get_top_other_subreddits(self, topic, year_month, users, num_subreddits):
         response = self.es.search(index='reddit_filtered_{0}'.format(year_month), body={

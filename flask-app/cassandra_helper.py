@@ -19,15 +19,17 @@ class CassandraHelper():
         for comment in filtered_comments_list:
             bound_stmt = self._prepared_stmt.bind([comment['author'], year_month, comment['created_utc'], comment['subreddit'], comment['id']])
             row = self._session.execute(bound_stmt)
-#            top_comments.append(row[0].word_count)
-
+            top_comments.append({'author':comment['author'], 'created_utc':comment['created_utc'], 'subreddit':comment['subreddit'], 'score':comment['score'], 'body':row[0].body})
         self._cluster.shutdown()
-        print top_comments
+        return top_comments
 
     def get_word_frequency_from_comments(self, filtered_comments_list, year_month):
         self.connect_to_cassandra('word_count')
         total_dict = {}
+        i = 0
         for comment in filtered_comments_list:
+            i += 1
+            print str(i)
             bound_stmt = self._prepared_stmt.bind([comment['author'], year_month, comment['created_utc'], comment['subreddit'], comment['id']])
             row = self._session.execute(bound_stmt)
             self.sum_word_frequency(total_dict, row[0].word_count)

@@ -16,7 +16,7 @@ KEY_SPACE = 'reddit'
 GRAPH_NAME = 'comments'
 COLUMN_ONE = 'author'
 COLUMN_TWO = 'year_month'
-COLUMN_THREE = 'created_utc'
+Column_THREE = 'created_utc'
 COLUMN_FOUR = 'subreddit'
 COLUMN_FIVE = 'id'
 COLUMN_SIX = 'word_count'
@@ -24,6 +24,8 @@ COLUMN_SEVEN = 'body'
 COLUMN_EIGHT = 'score'
 COLUMN_NINE = 'ups'
 COLUMN_TEN = 'controversiality'
+REPARTITION_SIZE = 3000
+FROM_YEAR_MONTH = sys.argv[1]
 
 def get_filtered_string_list(original_string):
     tokenized_list = word_tokenize(original_string.lower())
@@ -62,11 +64,13 @@ def main():
         logFile = 's3n://{0}/{1}'.format(RAW_JSON_REDDIT_BUCKET, key.name.encode('utf-8'))
         year = logFile.split('-')[1][-4:] 
         month = logFile.split('-')[2]
-        if int(year) < 2013 or (int(year) == 2013 and int(month) <6):
+        from_year = FROM_YEAR_MONTH.split('_')[0]
+        from_month = FROM_YEAR_MONTH.split('_')[1]
+        if int(year) < int(from_year) or (int(year) == int(from_year) and int(month) < int(from_month)):
             continue
         df = sqlContext.read.json(logFile)
         users_rdd = df.filter(df['author'] != '[deleted]') 
-        users_row = users_rdd.map(lambda json: (json.author, '{0}_{1}'.format(year, month), json.created_utc, json.subreddit, json.id, word_frequency(json.body), json.body, json.score, json.ups, json.controversiality))
+        users_row = users_rdd.map(lambda json: (json.author, '{0}_{1}'.format(year, month), json.created_utc, json.subreddit, json.id, word_frequency(json.body), json.body, json.score, json.ups, json.controversiality)).repartition(REPARTITION_SIZE)
         users_row.foreachPartition(insert_into_cassandra)
     sc.stop()
 

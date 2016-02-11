@@ -1,8 +1,8 @@
 # reddit genie
-Getting lots of cool reddit insights because that's how I roll dawg.
+Your reddit insights are my command....
 
 #1: Introduction
-reddit genie is designed to tell you what subreddits think about things. Beyond just naively searhching in that subreddit, reddie genie actually gets the users of that subreddit, then finds all their posts in all subreddits. This is because if you want the opinion of the science subreddit on say, Bernie Sanders, it's helpful to get all their posts, since they may not talk about Bernie Sanders in that subreddit.
+reddit genie is a tool designed you give users insight about subreddit communities by showing what words members of a subreddits use with a given topic. Beyond just naively searhching in that subreddit, reddie genie actually gets the users of that subreddit, then finds all their comments made in all subreddits. This is because if you want the opinion of the science subreddit on, say, Bernie Sanders, it's helpful to get all their comments everywhere, since they may not talk about Bernie Sanders in science.
 
 #2: Getting started
 First thing's first

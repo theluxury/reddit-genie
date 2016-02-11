@@ -2,7 +2,7 @@
 Your reddit insights are my command....
 
 #1: Introduction
-reddit genie is a tool designed you give users insight about subreddit communities by showing what words members of a subreddits use with a given topic. Beyond just naively searhching in that subreddit, reddie genie actually gets the users of that subreddit, then finds all their comments made in all subreddits. This is because if you want the opinion of the science subreddit on, say, Bernie Sanders, it's helpful to get all their comments everywhere, since they may not talk about Bernie Sanders in science.
+reddit genie is a tool designed you give users insight about subreddit communities by showing what words members of a subreddits use with a given topic. Beyond just naively searching in that subreddit, reddie genie actually gets the users of that subreddit, then finds all their comments made in all subreddits. This is because if you want the opinion of the science subreddit on, say, Bernie Sanders, it's helpful to get all their comments everywhere, since they may not talk about Bernie Sanders in science.
 
 #2: Getting started
 First thing's first
@@ -40,11 +40,11 @@ elasticsearch commits aggregation by first pulling the entire data field into ra
 <h5>Why are the queries slow? Can't we cache the possible queries?</h5>
 There are ~100k subreddits and ~1M English words. Assuming it takes 1 second to cache a query, caching 1% of subreddits for 1% of english words would take 1K * 100K = 10M seconds, or ~116 days.
 
-#6: Okay, how well did everything finally work out?
+#6: Results
 
 <h3>Performance</h3>
 
-For performance, this setup was acceptable, though not amazing. The first query for an elasticsearch month block took upwards of 30 seconds. However, each additional query from the same month block would be much faster, takin usually around a second. 
+For performance, this setup was acceptable, though not amazing. The first query for an elasticsearch month block took upwards of 30 seconds. However, each additional query from the same month block would be much faster, taking usually around a second. 
 
 The cassandra return time was suboptimal. Given the queries are for arbitrary words on users of abritrary subreddits, there is no natural partitioning pattern for cassandra. Pulling out original comments from cassandra happened at the rate of ~50 a second. 
 

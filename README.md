@@ -37,7 +37,7 @@ elasticsearch offer very powerful search capability at the expense of being incr
 
 elasticsearch commits aggregation by first pulling the entire data field into ram. Given the original size of a month's worth of data in ~30GB, this makes elasticsearch unuseable for aggregation counts without the steps of prefiltering and breaking into multiple tables which I have taken.
 
-<h4>Why are the queries slow? Can't we cache the possible queries?<h4>
+<h4>Why are the queries slow? Can't we cache the possible queries?</h4>
 There are ~100k subreddits and ~1M English words. Assuming it takes 1 second to cache a query, caching 1% of subreddits for 1% of english words would take 1K * 100K = 10M seconds, or ~116 days.
 
 #6: Okay, how well did everything finally work out?

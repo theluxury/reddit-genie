@@ -33,11 +33,11 @@ reddit data is read from S3 and preprocessed by a 6 spark node cluster. This clu
 
 elasticsearch offer very powerful search capability at the expense of being incredibly ram intensive. This makes it an ideal solution for storing metadata while a cassandra database acts as a more complete datastore if the full information is needed. After prefiltering, the elasticsearch database can accomplish it's goal of being a filtering mechanism while only taking 30% of the original raw JSON disk space.
 
-<h4>Is that really necessary? Can't we just store everything in elasticsearch?</h4>
+<h5>Is that really necessary? Can't we just store everything in elasticsearch?</h5>
 
 elasticsearch commits aggregation by first pulling the entire data field into ram. Given the original size of a month's worth of data in ~30GB, this makes elasticsearch unuseable for aggregation counts without the steps of prefiltering and breaking into multiple tables which I have taken.
 
-<h4>Why are the queries slow? Can't we cache the possible queries?</h4>
+<h5>Why are the queries slow? Can't we cache the possible queries?</h5>
 There are ~100k subreddits and ~1M English words. Assuming it takes 1 second to cache a query, caching 1% of subreddits for 1% of english words would take 1K * 100K = 10M seconds, or ~116 days.
 
 #6: Okay, how well did everything finally work out?
@@ -52,7 +52,7 @@ The cassandra return time was suboptimal. Given the queries are for arbitrary wo
 
 elasticsearch aggregation is actually as estimate, so I tested it's accuracy claims by comparison against the original comments stored in cassandra. Results were surprisingly bad: for a common word aggregation done on "cat" on the "programming" subreddit for the posts in June of 2008, the elasticsearch query returned a result of 482 instance of the word cat, whereas cassandra return 550 instances of the word cat, for an error rate of (550 - 482) / 482 = ~15% margin of error. 
 
-<h4>Methods</h4>
+<h5>Methods</h5>
 
 The cassandra count is found by first storing a dictionary of words with their frequency in the comment in each cassandra record. Then, all records who's metadata was queried in elasticsearch are pulled from cassandra and a sum is done over the dictionaries by key. The respective code for each step is stored in the spark/reddit_to_cassandra.py file and the flask-app/cassandra-helper.py files. Time was a limiting factor for this project, so further testing is needed to verify my results.
 

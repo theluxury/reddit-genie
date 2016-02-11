@@ -46,7 +46,9 @@ error')
                 flash("Read timed out. Don't worry! Try the same search again and it should work this time.", 'error')
                 return render_template('index.html', words=[], subreddits=[])
     top_other_subreddits = es_helper.get_top_other_subreddits(topic, year_month, top_users, MAX_OTHER_SUBREDDITS)
-    return render_template('index.html', words=top_words, subreddits=top_other_subreddits, topic=topic, link_url="glean/{0}/{1}/{2}".format(topic, subreddit, year_month))
+    if not top_words:
+        flash('Did not get any results for subreddit {0} users for topic {1} during {2}. Are you sure you spelled everything right? Remember that the subreddit entry is case sensitive'.format(subreddit, topic, year_month) ,'error')
+    return render_template('index.html', words=top_words, subreddits=top_other_subreddits, topic=topic, link_url="glean/{0}/{1}/{2}".format(topic, subreddit, year_month), show_comments=year_month_checker(year_month, 2014, 5))
 
 @app.route('/glean/<topic>/<subreddit>/<year_month>')
 def query_cassandra(topic, subreddit, year_month):

@@ -7,7 +7,7 @@ function create_pi_chart(subreddit_frequency_list, topic) {
 	renderTo: 'bar-graff'
     };
     var title = {
-	text: 'What subreddits ' + topic + ' was mentioned in among your audience.'
+	text: 'What subreddits ' + topic + ' was mentioned in among your users.'
     };
     var tooltip = {
 	pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'

@@ -48,7 +48,7 @@ For performance, this setup was acceptable, though not amazing. The first query 
 
 The cassandra query was also suboptimal. Given the queries are for arbitrary words on users of abritrary subreddits, there is no natural partitioning pattern for cassandra. Pulling out original comments from cassandra happened at the rate of ~50 a second. 
 
-<h3>Accuracy<h3>
+<h3>Accuracy</h3>
 
 elasticsearch aggregation is actually as estimate, so I tested it's accuracy claims by comparison against the original comments stored in cassandra. Results were surprisingly bad: for a common word aggregation done on "cat" on the "programming" subreddit for the posts in June of 2008, the es returned a result of 482 instance of the word cat, whereas cassandra return 550 instances of the word cat, for an error rate of (550 - 482) / 482 = ~15% margin of error. 
 

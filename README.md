@@ -52,7 +52,7 @@ The cassandra return time was suboptimal. Given the queries are for arbitrary wo
 
 elasticsearch aggregation is actually as estimate, so I tested it's accuracy claims by comparison against the original comments stored in cassandra. Results were surprisingly bad: for a common word aggregation done on "cat" on the "programming" subreddit for the posts in June of 2008, the elasticsearch query returned a result of 482 instance of the word cat, whereas cassandra return 550 instances of the word cat, for an error rate of (550 - 482) / 482 = ~15% margin of error. 
 
-<h4>Methods<h4>
+<h4>Methods</h4>
 
 The cassandra count is found by first storing a dictionary of words with their frequency in the comment in each cassandra record. Then, all records who's metadata was queried in elasticsearch are pulled from cassandra and a sum is done over the dictionaries by key. The respective code for each step is stored in the spark/reddit_to_cassandra.py file and the flask-app/cassandra-helper.py files. Time was a limiting factor for this project, so further testing is needed to verify my results.
 

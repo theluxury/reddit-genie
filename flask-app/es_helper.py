@@ -10,7 +10,7 @@ class ESHelper():
             sniff_on_start=True,    # sniff before doing anything
             sniff_on_connection_fail=True,    # refresh nodes after a node fails to respond
             sniffer_timeout=60, # and also every 60 seconds
-            timeout=30
+            timeout=10
             )
 
     def convert_year_month(self, year_month):
@@ -42,6 +42,9 @@ class ESHelper():
             return names_list
 
     def get_top_words(self, topic, year_month, users, num_terms):
+        # word to filter out in wordcloud results.
+        bad_words_set = {topic, 'm', 'people', 'think','going', 'something', 'guy', 'things', 'anything', 'really', 'person', 'https'}
+
         response = self.es.search(index='reddit_filtered_{0}'.format(year_month), body={
                 "size": 0,
                 "query": {
@@ -65,7 +68,6 @@ class ESHelper():
             return []
         else:
             words_list = []
-            bad_words_set = {topic, 'm', 'people', 'think','going', 'something', 'guy', 'things', 'anything', 'really', 'person'}
             for json_element in response['aggregations']['text']['buckets']:
                 if json_element['key'] not in bad_words_set:
                     words_list.append({'text': json_element['key'], 'size': json_element['doc_count']})

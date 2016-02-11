@@ -37,7 +37,7 @@
   {%- endif %}
   {%- endwith %}
   <div class="jumbotron" style="width:90%; height:200px">
-      <a href="http://www.google.com">
+      <a href="https://docs.google.com/presentation/d/1xbS-hQqX4Kv0_OQExt4_hzgM2XhxnvHbdOmjeTnGD84/pub?start=false&loop=false&delayms=3000&slide=id.gc6f8badac_0_0">
 	<img src="static/images/slideshare_logo.png" style="float:left; width:100px; margin-top:-20px">
       </a>
       <a href="https://github.com/theluxury/reddit-genie">
@@ -64,13 +64,13 @@
 
           during
 
-          <input style="color:black" type="month" name="year_month" value="2014-12">
+          <input style="color:black" type="month" name="year_month">
 
           across all of reddit.
 
           <br><br><input type="submit" value="Rub the Lamp" class="button" onclick="myFunction()">
 
-          <br><br><font color="#336699"><font color="#ff4500">Tip:</font> Subreddit input is case sensitive.</font>
+          <br><br><font color="#336699"><font color="#ff4500">Tip:</font> Subreddit input is case sensitive. Valid months range from October 2007 to June 2015.</font>
 
             </fieldset>
 
@@ -81,7 +81,10 @@
 </center>
 <div id="word-cloud" style="width:800px; height: 300px; margin:30px auto"></div>
 <div id="bar-graff" style="width: 550px; height: 400px; margin:100px auto"></div>
-<a href={{link_url}} type="button" class="btn btn-secondary">Show Top Comments</a>
+<div style="text-align:center;">
+<input type="button" class="btn btn-primary" style="margin-bottom:20px" onclick="location.href='{{link_url}}';" value="Show Top Comments" /><br>
+<font color="#336699"><font color="#ff4500">Warning: </font>Beta. Response in raw JSON and only works for months before June 2014.</font>
+</div>
 
 <script type="text/javascript">
 

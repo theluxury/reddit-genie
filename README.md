@@ -12,7 +12,7 @@ First thing's first
 Then
     
     python util/nltk-downloader.py
-and download stopwords and punkt. Now you're ready to run my code!
+and download stopwords and punkt. Finally, change the addresses in the config/ folder and you're ready to run my code!
 
 #3: What does it actually <i>do?</i>
 <h3>Supported Queries</h3>

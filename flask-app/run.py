@@ -35,7 +35,7 @@ error')
        return render_template('index.html', words=[], subreddits=[])
     top_users = es_helper.get_top_users(subreddit, year_month, MAX_USERS)
     current_try = 0
-    total_tries = 6
+    total_tries = 4
     while current_try < total_tries:
         current_try += 1
         try:
@@ -44,7 +44,7 @@ error')
         except:
             if current_try == total_tries:
                 flash("Read timed out. Don't worry! Try the same search again and it should work this time.", 'error')
-                return render_template('index.html', words=[], subreddits=[])
+                return redirect('/')
     top_other_subreddits = es_helper.get_top_other_subreddits(topic, year_month, top_users, MAX_OTHER_SUBREDDITS)
     if not top_words:
         flash('Did not get any results for subreddit {0} users for topic {1} during {2}. Are you sure you spelled everything right? Remember that the subreddit entry is case sensitive'.format(subreddit, topic, year_month) ,'error')

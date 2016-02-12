@@ -45,7 +45,6 @@ class ESHelper():
         terms = topic.split()
         filter_list = []
         for term in terms:
-            print term
             filter_list.append({"match": {"filtered_body":term}})
         filter_list.append({ "terms" : { "author": users }})
         return filter_list

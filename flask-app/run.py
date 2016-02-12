@@ -61,7 +61,7 @@ def query_cassandra(topic, subreddit, year_month):
     top_users = es_helper.get_top_users(subreddit, year_month, MAX_USERS)
     top_filtered_comments =  es_helper.get_top_comments_by_score(topic, year_month, top_users, MAX_COMMENTS)
     cassandra_helper = CassandraHelper()
-    return json.dumps(cassandra_helper.get_highest_ranked_comments(top_filtered_comments, year_month))
+    return render_template('comments.html', topic=topic, comments = cassandra_helper.get_highest_ranked_comments(top_filtered_comments, year_month))
 
 if __name__ == '__main__':
     app.secret_key = 'SECRET_KEY'

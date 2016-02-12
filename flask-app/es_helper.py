@@ -41,18 +41,26 @@ class ESHelper():
                 names_list.append(json_element['key'])
             return names_list
 
+    def get_filter_list(self, topic, users):
+        terms = topic.split()
+        filter_list = []
+        for term in terms:
+            print term
+            filter_list.append({"match": {"filtered_body":term}})
+        filter_list.append({ "terms" : { "author": users }})
+        return filter_list
+
     def get_top_words(self, topic, year_month, users, num_terms):
         # word to filter out in wordcloud results.
-        bad_words_set = {topic, 'm', 'people', 'think','going', 'something', 'guy', 'things', 'anything', 'really', 'person', 'https'}
-
+        bad_words_set = {'m', 'people', 'think','going', 'something', 'guy', 'things', 'anything', 'really', 'person', 'https'}
+        for term in topic.split():
+            bad_words_set.add(term)
+        filter_list = self.get_filter_list(topic, users)
         response = self.es.search(index='reddit_filtered_{0}'.format(year_month), body={
                 "size": 0,
                 "query": {
                     "bool": {
-                        "filter": [
-                            { "match": {"filtered_body": topic}},
-                            { "terms" : { "author": users }}
-                            ]
+                        "filter": filter_list
                     }
                 },
                 "aggregations": {
@@ -75,14 +83,12 @@ class ESHelper():
     
 
     def get_top_other_subreddits(self, topic, year_month, users, num_subreddits):
+        filter_list = self.get_filter_list(topic, users)
         response = self.es.search(index='reddit_filtered_{0}'.format(year_month), body={
                 "size": 0,
                 "query": {
                     "bool": {
-                        "filter": [
-                            { "match": {"filtered_body": topic}},
-                            { "terms" : { "author": users }}
-                            ]
+                        "filter": filter_list
                     }
                 },
                 "aggregations": {

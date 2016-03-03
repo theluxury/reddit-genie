@@ -12,8 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))) +
 from instances import ES_CLUSTER_PUBLIC_DNS_LIST
 from aws import REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, MY_BUCKET, MY_BUCKET_S3_REDDIT_PREFIX
 
-def download_files():
-    prefixes = ["reddit-es-comments-json/2014_01", "reddit-es-comments-json/2014_12"]
+def download_files(prefixes):
     tmp_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/tmp/')
     conn = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
     bucket = conn.get_bucket(MY_BUCKET)
@@ -48,8 +47,9 @@ def init_es():
     return es
 
 def main():
+    prefixes = ["reddit-es-comments-json/2014_01", "reddit-es-comments-json/2014_12"]
     es = init_es()
-    tmp_dir = download_files()
+    tmp_dir = download_files(prefixes)
     for dirname in os.walk(tmp_dir):
         if dirname[0] == tmp_dir: # walk returns a tuple. first element is string of sub directory. 
             continue
